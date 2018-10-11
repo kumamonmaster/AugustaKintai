@@ -27,19 +27,19 @@ import util.Log;
  */
 public class DBController {
     
-    private Connection connection = null;
+    private static Connection connection = null;
     
     private String url = "jdbc:mysql://localhost:3306/mynumberdb";
     private String user = "TakafumiSato";
     private String password = "1234567";
     
-    Log log = new Log(DBController.class.getName(),"test.log");
+    private static Log log = new Log(DBController.class.getName(),"test.log");
     
     
     /*
     データベースをオープン
     */
-    public Connection open() throws SQLException, NamingException {
+    public static Connection open() throws SQLException, NamingException {
         
         String jndi = "java:comp/env/jdbc/MySQL";
         
@@ -53,34 +53,30 @@ public class DBController {
 
                 // データソースでコネクション取得
                 connection = dataSource.getConnection();
+                
         } catch (NamingException ex) {
             
             ex.printStackTrace();
             log.log(Level.SEVERE, "Naming例外です", ex);
             throw new NamingException();
+            
         } catch (SQLException ex) {
             
-            close();
+            try {
+                if (connection != null)
+                    connection.close();
+                connection = null;
+            } catch(SQLException ex2) {
+                ex2.printStackTrace();
+                log.log(Level.SEVERE, "SQL例外です", ex2);
+                throw new SQLException();
+            }
+            
             ex.printStackTrace();
             log.log(Level.SEVERE, "SQL例外です", ex);
             throw new SQLException();
         }
         
         return connection;
-    }
-    
-    /*
-    データベースをクローズ
-    */
-    public void close() {
-        
-        try {
-            if (connection != null)
-                connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            connection = null;
-        }
     }
 }

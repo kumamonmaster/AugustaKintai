@@ -45,7 +45,6 @@ public class LoginBean {
     }
 
     public String login() throws SQLException, IOException {
-        DBController dbController = new DBController();
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -55,7 +54,7 @@ public class LoginBean {
         try {
             
             // データベース接続
-            connection = dbController.open();
+            connection = DBController.open();
             
             // userテーブルからデータを取得
             stmt = connection.prepareStatement("SELECT id,name,password FROM user WHERE mail = ?");
@@ -82,28 +81,34 @@ public class LoginBean {
             log.log(Level.SEVERE, "SQL例外です", ex);
             throw new SQLException();
         } finally {
+            
             // クローズ
-            if (dbController != null)
-                dbController.close();
+            try {
+                if (rs != null)
+                    rs.close();
+                rs = null;
+            } catch (SQLException ex) {
+                log.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                ex.printStackTrace();
+            }
             
             try {
                 if (stmt != null)
                     stmt.close();
+                stmt = null;
             } catch (SQLException ex) {
                 log.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
             }
             
             try {
-                if (rs != null)
-                    rs.close();
+                if (connection != null)
+                    connection.close();
+                connection = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                log.log(Level.SEVERE, "Connectionクローズ失敗", ex);
+                ex.printStackTrace();
             }
-            
-            dbController = null;
-            connection = null;
-            stmt = null;
-            rs = null;
         }
         
         // 一致しなかったらとりあえずページ遷移させない

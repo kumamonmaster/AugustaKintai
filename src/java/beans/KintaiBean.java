@@ -112,8 +112,6 @@ public class KintaiBean {
             ex.printStackTrace();
             throw new NamingException();
         }
-        
-        c = null;
     }
     
     /*
@@ -122,7 +120,6 @@ public class KintaiBean {
     */
     private void setKintaiData() throws SQLException, NamingException {
         
-        DBController dbController = new DBController();
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -132,11 +129,11 @@ public class KintaiBean {
         try {
             
             // データベース接続
-            connection = dbController.open();
+            connection = DBController.open();
             
             // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE user_id = ?");
-            stmt.setString(1, this.userData.getId());
+            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE kintai_key LIKE ?");
+            stmt.setString(1, "%"+this.userData.getId()+"%");
             rs = stmt.executeQuery();
 
             // 今まで登録されているデータを取得し設定
@@ -146,16 +143,9 @@ public class KintaiBean {
                 // カレンダーにデータベースから取得したDateをセット
                 c_sql.setTime(date);
                 
-                for (KintaiData kintaiData: kintaiDataList) {
-                    // 一致する日付に設定
-                    // カレンダーにkintaiDataのDateをセット
-                    c_kintai.setTime(kintaiData.getDate());
-                    if (c_sql.get(Calendar.DAY_OF_MONTH) == c_kintai.get(Calendar.DAY_OF_MONTH)) {
-                        kintaiData.setKintaiData(rs.getTime("start"), rs.getTime("end"), 
+                kintaiDataList.get(c_sql.get(Calendar.DAY_OF_MONTH)-1).setKintaiData(rs.getTime("start"), rs.getTime("end"), 
                                 rs.getDouble("rest"), rs.getDouble("total"), rs.getDouble("over"), 
                                 rs.getDouble("real"), rs.getInt("kbn_id"));
-                    }
-                }
             }
         
         } catch (NamingException ex) {
@@ -167,32 +157,34 @@ public class KintaiBean {
             ex.printStackTrace();
             throw new SQLException();
         } finally {
+            
             // クローズ
-            if (dbController != null)
-                dbController.close();
+            try {
+                if (rs != null)
+                    rs.close();
+                rs = null;
+            } catch (SQLException ex) {
+                log.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                ex.printStackTrace();
+            }
             
             try {
                 if (stmt != null)
                     stmt.close();
+                stmt = null;
             } catch (SQLException ex) {
                 log.log(Level.SEVERE, "Statementクローズ失敗", ex);
                 ex.printStackTrace();
             }
             
             try {
-                if (rs != null)
-                    rs.close();
+                if (connection != null)
+                    connection.close();
+                connection = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                log.log(Level.SEVERE, "Connectionクローズ失敗", ex);
                 ex.printStackTrace();
             }
-            
-            dbController = null;
-            connection = null;
-            stmt = null;
-            rs = null;
-            c_sql = null;
-            c_kintai = null;
         }
     }
 
