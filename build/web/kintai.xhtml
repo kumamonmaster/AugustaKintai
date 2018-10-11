@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>カレンダー</title>
+    </h:head>
+    <h:body>
+        <!--<h1><h:outputText value="#{kintaiBean.month}"/>月度</h1>-->
+        <h1>カレンダー</h1>
+        <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
+            <h:column>
+                <f:facet name="header">
+                <h:outputText value="日付"/>
+                </f:facet>
+                <h:outputText value="#{item.conversionDate}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                <h:outputText value="出勤時間"/>
+                </f:facet>
+                <h:outputText value="#{item.start}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                <h:outputText value="退勤時間"/>
+                </f:facet>
+                <h:outputText value="#{item.end}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                <h:outputText value="休憩時間"/>
+                </f:facet>
+                <h:outputText value="#{item.rest}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                <h:outputText value="総労働時間"/>
+                </f:facet>
+                <h:outputText value="#{item.total}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                <h:outputText value="残業時間"/>
+                </f:facet>
+                <h:outputText value="#{item.over}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                <h:outputText value="実労働時間"/>
+                </f:facet>
+                <h:outputText value="#{item.real}"/>
+            </h:column>
+        </h:dataTable>
+
+<p>#{userData.id}</p>
+<p>#{userData.name}</p>
+<p>#{userData.mail}</p>
+<p>#{userData.password}</p>
+    </h:body>
+</html>
+

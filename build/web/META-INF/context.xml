@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/AugustaKintai">
+<!-- MySQL -->
+    <Resource name="jdbc/MySQL" type="javax.sql.DataSource" username="TakafumiSato" password="1234567" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/augustaKintai?zeroDateTimeBehavior=convertToNull" />
+</Context>
