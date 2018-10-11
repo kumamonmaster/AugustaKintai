@@ -65,8 +65,10 @@ public class KintaiBean {
             initKintaiData();
         } catch (SQLException ex) {
             log.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
         } catch (NamingException ex) {
             log.log(Level.SEVERE, "Naming例外です", ex);
+            ex.printStackTrace();
         }
     }
     
