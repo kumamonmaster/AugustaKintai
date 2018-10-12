@@ -49,7 +49,7 @@ public class KintaiBean {
     // ログ生成
     private Log log = new Log(LoginBean.class.getName(), "test.log");
     // 今月度
-    private ArrayList<String> monthList = null;
+    private ArrayList<String> yearMonthList = null;
     
     /*
     KintaiBeanコンストラクタ
@@ -89,7 +89,7 @@ public class KintaiBean {
         // 月度の最終日を取得
         int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
         // 今月度を設定 0から始まるため+1する
-        monthList = setMonth();
+        yearMonthList = setYearMonth();
         
         // kintaiDataListの日付部分を設定
         for (int i = 1; i <= lastDay; i++) {
@@ -114,19 +114,19 @@ public class KintaiBean {
         }
     }
     
-    private ArrayList<String> setMonth() {
+    private ArrayList<String> setYearMonth() {
         
         int range = 12;
-        ArrayList<String> monthList = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<String>();
         Calendar c = new GregorianCalendar();
         c.add(Calendar.MONTH, -range/2);
         
         for (int i = 0; i < range; i++) {
-            monthList.add(String.valueOf(c.get(Calendar.MONTH)+1));
+            list.add(String.valueOf(c.get(Calendar.YEAR))+"年"+String.valueOf(c.get(Calendar.MONTH)+1)+"月");
             c.add(Calendar.MONTH, +1);
         }
         
-        return monthList;
+        return list;
     }
     
     /*
@@ -160,7 +160,7 @@ public class KintaiBean {
                 
                 kintaiDataList.get(c_sql.get(Calendar.DAY_OF_MONTH)-1).setKintaiData(rs.getTime("start"), rs.getTime("end"), 
                                 rs.getDouble("rest"), rs.getDouble("total"), rs.getDouble("over"), 
-                                rs.getDouble("real"), rs.getInt("kbn_id"));
+                                rs.getDouble("real"), rs.getString("kbn_id"));
             }
         
         } catch (NamingException ex) {
@@ -212,11 +212,11 @@ public class KintaiBean {
         this.userData = userData;
     }
     
-    public ArrayList<String> getMonthList() {
-        return monthList;
+    public ArrayList<String> getYearMonthList() {
+        return yearMonthList;
     }
     
-    public String getMonth() {
-        return monthList.get(6);
+    public String getYearMonth() {
+        return yearMonthList.get(6);
     }
 }

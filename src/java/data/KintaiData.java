@@ -23,7 +23,7 @@ public class KintaiData {
     private double total;
     private double over;
     private double real;
-    private int kbnId;
+    private String kbn;
 
     
     public KintaiData(Date date) {
@@ -34,17 +34,17 @@ public class KintaiData {
         this.rest = 0.0;
         this.over = 0.0;
         this.real = 0.0;
-        this.kbnId = 0;
+        this.kbn = "";
     }
     
-    public void setKintaiData(Time start, Time end, double total, double rest, double over, double real, int kbnId) {
+    public void setKintaiData(Time start, Time end, double total, double rest, double over, double real, String kbn) {
         this.start = start;
         this.end = end;
         this.total = total;
         this.rest = rest;
         this.over = over;
         this.real = real;
-        this.kbnId = kbnId;
+        this.kbn = kbn;
     }
     
 
@@ -69,12 +69,12 @@ public class KintaiData {
         this.date = date;
     }
 
-    public int getKbnId() {
-        return kbnId;
+    public String getKbn() {
+        return kbn;
     }
 
-    public void setKbnId(int kbnId) {
-        this.kbnId = kbnId;
+    public void setKbn(String kbn) {
+        this.kbn = kbn;
     }
 
     public String getStart() {

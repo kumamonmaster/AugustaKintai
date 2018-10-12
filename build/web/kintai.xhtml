@@ -10,8 +10,8 @@
     </h:head>
     <h:body>
         <h1>
-            <h:selectOneMenu value="#{kintaiBean.month}">
-                <f:selectItems value="#{kintaiBean.monthList}"/>
+            <h:selectOneMenu value="#{kintaiBean.yearMonth}">
+                <f:selectItems value="#{kintaiBean.yearMonthList}"/>
             </h:selectOneMenu>
         </h1>
         <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
@@ -56,6 +56,12 @@
                 <h:outputText value="実労働時間"/>
                 </f:facet>
                 <h:outputText value="#{item.real}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                <h:outputText value="区分"/>
+                </f:facet>
+                <h:outputText value="#{item.kbn}"/>
             </h:column>
         </h:dataTable>
 
