@@ -49,7 +49,7 @@ public class KintaiBean {
     // ログ生成
     private Log log = new Log(LoginBean.class.getName(), "test.log");
     // 今月度
-    private String month = null;
+    private ArrayList<String> monthList = null;
     
     /*
     KintaiBeanコンストラクタ
@@ -88,8 +88,8 @@ public class KintaiBean {
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1);
         // 月度の最終日を取得
         int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-        // 今月度を設定
-        month = String.valueOf(c.get(Calendar.MONTH));
+        // 今月度を設定 0から始まるため+1する
+        monthList = setMonth();
         
         // kintaiDataListの日付部分を設定
         for (int i = 1; i <= lastDay; i++) {
@@ -112,6 +112,21 @@ public class KintaiBean {
             ex.printStackTrace();
             throw new NamingException();
         }
+    }
+    
+    private ArrayList<String> setMonth() {
+        
+        int range = 12;
+        ArrayList<String> monthList = new ArrayList<String>();
+        Calendar c = new GregorianCalendar();
+        c.add(Calendar.MONTH, -range/2);
+        
+        for (int i = 0; i < range; i++) {
+            monthList.add(String.valueOf(c.get(Calendar.MONTH)+1));
+            c.add(Calendar.MONTH, +1);
+        }
+        
+        return monthList;
     }
     
     /*
@@ -197,7 +212,11 @@ public class KintaiBean {
         this.userData = userData;
     }
     
+    public ArrayList<String> getMonthList() {
+        return monthList;
+    }
+    
     public String getMonth() {
-        return month;
+        return monthList.get(6);
     }
 }

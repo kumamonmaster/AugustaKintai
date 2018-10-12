@@ -9,8 +9,11 @@
         <title>カレンダー</title>
     </h:head>
     <h:body>
-        <!--<h1><h:outputText value="#{kintaiBean.month}"/>月度</h1>-->
-        <h1>カレンダー</h1>
+        <h1>
+            <h:selectOneMenu value="#{kintaiBean.month}">
+                <f:selectItems value="#{kintaiBean.monthList}"/>
+            </h:selectOneMenu>
+        </h1>
         <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
             <h:column>
                 <f:facet name="header">
