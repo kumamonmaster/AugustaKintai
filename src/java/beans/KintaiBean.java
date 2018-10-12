@@ -13,17 +13,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.util.Date;
-import java.time.LocalDate;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -41,13 +34,13 @@ import util.Log;
  * 
  */
 @ManagedBean
-@ViewScoped
+@RequestScoped
 public class KintaiBean {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
-//    @ManagedProperty(value="#{kintaiKey}")
-//    private KintaiKey kintaiKey;
+    @ManagedProperty(value="#{kintaiKey}")
+    private KintaiKey kintaiKey;
     
     private ArrayList<KintaiData> kintaiDataList = null;
     // ログ生成
@@ -222,14 +215,16 @@ public class KintaiBean {
         return kintaiDataList;
     }
     
+    
+    
     public void setUserData(UserData userData) {
         
         this.userData = userData;
     }
 
-//    public void setKintaiKey(KintaiKey kintaiKey) {
-//        this.kintaiKey = kintaiKey;
-//    }
+    public void setKintaiKey(KintaiKey kintaiKey) {
+        this.kintaiKey = kintaiKey;
+    }
     
     
     
@@ -255,10 +250,10 @@ public class KintaiBean {
         this.nowYearMonth = nowYearMonth;
     }
     
-    public String edit() {
+    public String edit(int ym, String user_id, int day) {
         
         // データベースへアクセスする
-        //this.kintaiKey.setKintaiKey(key);
+        this.kintaiKey.setKey(ym, user_id, day);
         
         return "edit.xhtml";
     }

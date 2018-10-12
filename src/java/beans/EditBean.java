@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
@@ -45,9 +46,16 @@ public class EditBean {
      */
     public EditBean() {
         
-        //kintaiData = new KintaiData();
+        kintaiData = new KintaiData(kintaiKey.getYm(),kintaiKey.getDay());
         
-        // 初期化
+        try {
+            // 初期化
+            init();
+        } catch (SQLException ex) {
+            Logger.getLogger(EditBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(EditBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void init() throws SQLException, NamingException {
@@ -62,12 +70,15 @@ public class EditBean {
             connection = DBController.open();
             
             // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE kintai_key = ?");
-            stmt.setString(1, this.kintaiKey.getKintaiKey());
+            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ? AND day = ?");
+            stmt.setInt(1, this.kintaiKey.getYm());
+            stmt.setString(2, this.kintaiKey.getUserId());
+            stmt.setInt(3, this.kintaiKey.getDay());
             rs = stmt.executeQuery();
 
             // 今まで登録されているデータを取得し設定
             if (rs.next()) {
+                
             }
         
         } catch (NamingException ex) {
@@ -108,6 +119,10 @@ public class EditBean {
                 ex.printStackTrace();
             }
         }
+    }
+    
+    public void setKintaiKey(KintaiKey kintaiKey) {
+        this.kintaiKey = kintaiKey;
     }
     
 }

@@ -18,13 +18,37 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class KintaiKey implements Serializable {
     
-    String kintaiKey = null;
+    int ym = 0;
+    String user_id = null;
+    int day = 0;
 
-    public String getKintaiKey() {
-        return kintaiKey;
+    public void setKey(int ym, String user_id, int day) {
+        this.ym = ym;
+        this.user_id = user_id;
+        this.day = day;
     }
 
-    public void setKintaiKey(String kintaiKey) {
-        this.kintaiKey = kintaiKey;
+    public int getYm() {
+        return ym;
+    }
+
+    public void setYm(int ym) {
+        this.ym = ym;
+    }
+
+    public String getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(String user_id) {
+        this.user_id = user_id;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
     }
 }
