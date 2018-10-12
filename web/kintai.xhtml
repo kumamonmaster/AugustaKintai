@@ -9,61 +9,67 @@
         <title>カレンダー</title>
     </h:head>
     <h:body>
+        <h:form>
         <h1>
-            <h:selectOneMenu value="#{kintaiBean.yearMonth}">
+            <!--<h:selectOneMenu value="2018年10月">-->
+                <h:selectOneMenu value="#{kintaiBean.yearMonth}">
                 <f:selectItems value="#{kintaiBean.yearMonthList}"/>
             </h:selectOneMenu>
+            <h:outputText value="#{kintaiBean.yearMonth}"/>
+            <h:outputText value="#{kintaiBean.nowYearMonth}"/>
         </h1>
-        <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
-            <h:column>
-                <f:facet name="header">
-                <h:outputText value="日付"/>
-                </f:facet>
-                <h:outputText value="#{item.conversionDate}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">
-                <h:outputText value="出勤時間"/>
-                </f:facet>
-                <h:outputText value="#{item.start}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">
-                <h:outputText value="退勤時間"/>
-                </f:facet>
-                <h:outputText value="#{item.end}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">
-                <h:outputText value="休憩時間"/>
-                </f:facet>
-                <h:outputText value="#{item.rest}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">
-                <h:outputText value="総労働時間"/>
-                </f:facet>
-                <h:outputText value="#{item.total}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">
-                <h:outputText value="残業時間"/>
-                </f:facet>
-                <h:outputText value="#{item.over}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">
-                <h:outputText value="実労働時間"/>
-                </f:facet>
-                <h:outputText value="#{item.real}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">
-                <h:outputText value="区分"/>
-                </f:facet>
-                <h:outputText value="#{item.kbn}"/>
-            </h:column>
-        </h:dataTable>
+            <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="日付"/>
+                    </f:facet>
+                    <h:outputText value="#{item.conversionDate}"/>
+                    <h:commandButton value="編集" action="#{kintaiBean.edit()}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="出勤時間"/>
+                    </f:facet>
+                    <h:outputText value="#{item.start}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="退勤時間"/>
+                    </f:facet>
+                    <h:outputText value="#{item.end}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="休憩時間"/>
+                    </f:facet>
+                    <h:outputText value="#{item.rest}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="総労働時間"/>
+                    </f:facet>
+                    <h:outputText value="#{item.total}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="残業時間"/>
+                    </f:facet>
+                    <h:outputText value="#{item.over}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="実労働時間"/>
+                    </f:facet>
+                    <h:outputText value="#{item.real}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="区分"/>
+                    </f:facet>
+                    <h:outputText value="#{item.kbn}"/>
+                </h:column>
+            </h:dataTable>
+        </h:form>
 
 <p>#{userData.id}</p>
 <p>#{userData.name}</p>

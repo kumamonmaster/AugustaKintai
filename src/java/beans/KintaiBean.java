@@ -6,6 +6,7 @@
 package beans;
 
 import data.KintaiData;
+import data.KintaiKey;
 import data.UserData;
 import database.DBController;
 import java.sql.Connection;
@@ -27,8 +28,9 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.naming.NamingException;
-import util.Conversion;
+import util.Utility;
 import util.Log;
 
 /**
@@ -39,17 +41,21 @@ import util.Log;
  * 
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class KintaiBean {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+//    @ManagedProperty(value="#{kintaiKey}")
+//    private KintaiKey kintaiKey;
     
     private ArrayList<KintaiData> kintaiDataList = null;
     // ログ生成
     private Log log = new Log(LoginBean.class.getName(), "test.log");
-    // 今月度
+    // 選択月度リスト
     private ArrayList<String> yearMonthList = null;
+    // 今月度
+    private String nowYearMonth = null;
     
     /*
     KintaiBeanコンストラクタ
@@ -88,14 +94,14 @@ public class KintaiBean {
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1);
         // 月度の最終日を取得
         int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-        // 今月度を設定 0から始まるため+1する
+        // 今月度を設定
         yearMonthList = setYearMonth();
         
         // kintaiDataListの日付部分を設定
         for (int i = 1; i <= lastDay; i++) {
             
             // Stringで日付と曜日を設定
-            kintaiDataList.add(new KintaiData(c.getTime()));
+            kintaiDataList.add(new KintaiData(Utility.union(c.get(Calendar.YEAR), c.get(Calendar.MONTH+1)), c.get(Calendar.DAY_OF_MONTH)));
             // 日付を1日ずらす
             c.add(Calendar.DAY_OF_MONTH, +1);
         }
@@ -122,13 +128,24 @@ public class KintaiBean {
         c.add(Calendar.MONTH, -range/2);
         
         for (int i = 0; i < range; i++) {
-            list.add(String.valueOf(c.get(Calendar.YEAR))+"年"+String.valueOf(c.get(Calendar.MONTH)+1)+"月");
-            c.add(Calendar.MONTH, +1);
+            list.add(String.valueOf(c.get(Calendar.YEAR))+"年"+String.valueOf(c.get(Calendar.MONTH)+1+i)+"月");
+            setNowYearMonth(c.get(Calendar.MONTH)+1+i);
         }
         
         return list;
     }
     
+    private void setNowYearMonth(int month) {
+        
+        Calendar c = new GregorianCalendar();
+        
+        if (c.get(Calendar.MONTH)+1 == month) {
+            nowYearMonth = String.valueOf(c.get(Calendar.YEAR)) + String.valueOf(c.get(Calendar.MONTH)+1);
+        }
+    }
+    public String getNowYearMonth() {
+        return nowYearMonth;
+    }
     /*
     setKintaiData
     データベースに存在する勤怠データを設定
@@ -147,18 +164,16 @@ public class KintaiBean {
             connection = DBController.open();
             
             // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE kintai_key LIKE ?");
-            stmt.setString(1, "%"+this.userData.getId()+"%");
+            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
+            stmt.setInt(1, Integer.parseInt(this.nowYearMonth));
+            stmt.setString(2, this.userData.getId());
             rs = stmt.executeQuery();
 
             // 今まで登録されているデータを取得し設定
             while (rs.next()) {
-                // SQL_DATEをUTIL_DATEに変換
-                Date date = Conversion.conversionSQLDateToDate(rs.getDate("date"));
-                // カレンダーにデータベースから取得したDateをセット
-                c_sql.setTime(date);
                 
-                kintaiDataList.get(c_sql.get(Calendar.DAY_OF_MONTH)-1).setKintaiData(rs.getTime("start"), rs.getTime("end"), 
+                kintaiDataList.get(rs.getInt("day")-1).setKintaiData(
+                                rs.getTime("start"), rs.getTime("end"), 
                                 rs.getDouble("rest"), rs.getDouble("total"), rs.getDouble("over"), 
                                 rs.getDouble("real"), rs.getString("kbn_id"));
             }
@@ -211,12 +226,40 @@ public class KintaiBean {
         
         this.userData = userData;
     }
+
+//    public void setKintaiKey(KintaiKey kintaiKey) {
+//        this.kintaiKey = kintaiKey;
+//    }
+    
+    
+    
+    public void setYearMonth(String s) {
+        // ここは修正する
+        //yearMonthList.get(0);
+    }
+    
+    public String getYearMonth() {
+        // ここは修正する
+        return yearMonthList.get(6);
+    }
     
     public ArrayList<String> getYearMonthList() {
         return yearMonthList;
     }
     
-    public String getYearMonth() {
-        return yearMonthList.get(6);
+    public void setYearMonthList(ArrayList<String> yearMonthList) {
+        this.yearMonthList = yearMonthList;
+    }
+
+    public void setNowYearMonth(String nowYearMonth) {
+        this.nowYearMonth = nowYearMonth;
+    }
+    
+    public String edit() {
+        
+        // データベースへアクセスする
+        //this.kintaiKey.setKintaiKey(key);
+        
+        return "edit.xhtml";
     }
 }

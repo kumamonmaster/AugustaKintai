@@ -7,7 +7,7 @@ package data;
 
 import java.util.Date;
 import java.sql.Time;
-import util.Conversion;
+import util.Utility;
 
 /**
  *
@@ -15,8 +15,8 @@ import util.Conversion;
  */
 public class KintaiData {
     
-    private int id;
-    private Date date;
+    private int ym;
+    private int day;
     private Time start;
     private Time end;
     private double rest;
@@ -26,8 +26,9 @@ public class KintaiData {
     private String kbn;
 
     
-    public KintaiData(Date date) {
-        this.date = date;
+    public KintaiData(int ym, int day) {
+        this.ym = ym;
+        this.day = day;
         this.start = null;
         this.end = null;
         this.total = 0.0;
@@ -48,25 +49,25 @@ public class KintaiData {
     }
     
 
-    public int getId() {
-        return id;
+    public int getYm() {
+        return ym;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setYm(int ym) {
+        this.ym = ym;
     }
 
-    public Date getDate() {
-        return date;
+    public int getDay() {
+        return day;
     }
     
     public String getConversionDate() {
         
-        return Conversion.conversionDateToString(date)+" "+Conversion.conversionDayOfWeek(date);
+        return String.valueOf(day)+" "+Utility.conversionDayOfWeek(ym, day);
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDay(int day) {
+        this.day = day;
     }
 
     public String getKbn() {
