@@ -1,12 +1,35 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>Facelet Title</title>
     </h:head>
     <h:body>
-        
+        <h:form>
+            <p>日付 <h:outputText value="#{kintaiKey.ym}"/> <h:outputText value="#{kintaiKey.day}"/></p>
+            <p>
+                区分
+                <h:selectOneMenu>
+                    <f:selectItem itemValue="出勤" itemLabel="出勤"/>
+                    <f:selectItem itemValue="有給" itemLabel="有給"/>
+                    <f:selectItem itemValue="欠勤" itemLabel="欠勤"/>
+                </h:selectOneMenu>
+            </p>
+            <p>出退勤時間<h:inputText/>～<h:inputText/></p>
+            <p>休憩時間<h:inputText/>～<h:inputText/></p>
+            <p>備考<h:inputTextarea/></p>
+        </h:form>
+        年月<h:outputText value="#{editBean.kintaiData.ym}"/>
+        日<h:outputText value="#{editBean.kintaiData.day}"/>
+        出勤<h:outputText value="#{editBean.kintaiData.start}"/>
+        退勤<h:outputText value="#{editBean.kintaiData.end}"/>
+        休憩<h:outputText value="#{editBean.kintaiData.rest}"/>
+        残業<h:outputText value="#{editBean.kintaiData.over}"/>
+        総<h:outputText value="#{editBean.kintaiData.total}"/>
+        実<h:outputText value="#{editBean.kintaiData.real}"/>
+        区分<h:outputText value="#{editBean.kintaiData.kbnCd}"/>
     </h:body>
 </html>
 

@@ -23,7 +23,7 @@ public class KintaiData {
     private double total;
     private double over;
     private double real;
-    private String kbn;
+    private int kbn_cd;
 
     
     public KintaiData(int ym, int day) {
@@ -35,17 +35,17 @@ public class KintaiData {
         this.rest = 0.0;
         this.over = 0.0;
         this.real = 0.0;
-        this.kbn = "";
+        this.kbn_cd = 0;
     }
     
-    public void setKintaiData(Time start, Time end, double total, double rest, double over, double real, String kbn) {
+    public void setKintaiData(Time start, Time end, double total, double rest, double over, double real, int kbn_cd) {
         this.start = start;
         this.end = end;
         this.total = total;
         this.rest = rest;
         this.over = over;
         this.real = real;
-        this.kbn = kbn;
+        this.kbn_cd = kbn_cd;
     }
     
 
@@ -63,19 +63,19 @@ public class KintaiData {
     
     public String getConversionDate() {
         
-        return String.valueOf(day)+" "+Utility.conversionDayOfWeek(ym, day);
+        return String.valueOf(ym) + " " + String.valueOf(day)+" "+Utility.conversionDayOfWeek(ym, day);
     }
 
     public void setDay(int day) {
         this.day = day;
     }
 
-    public String getKbn() {
-        return kbn;
+    public int getKbnCd() {
+        return kbn_cd;
     }
 
-    public void setKbn(String kbn) {
-        this.kbn = kbn;
+    public void setKbnCd(int kbn_cd) {
+        this.kbn_cd = kbn_cd;
     }
 
     public String getStart() {

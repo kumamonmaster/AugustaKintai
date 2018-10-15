@@ -11,8 +11,7 @@
     <h:body>
         <h:form>
         <h1>
-            <!--<h:selectOneMenu value="2018年10月">-->
-                <h:selectOneMenu value="#{kintaiBean.yearMonth}">
+            <h:selectOneMenu value="#{kintaiBean.yearMonth}">
                 <f:selectItems value="#{kintaiBean.yearMonthList}"/>
             </h:selectOneMenu>
             <h:outputText value="#{kintaiBean.yearMonth}"/>
@@ -66,7 +65,7 @@
                     <f:facet name="header">
                     <h:outputText value="区分"/>
                     </f:facet>
-                    <h:outputText value="#{item.kbn}"/>
+                    <h:outputText value="#{item.kbnCd}"/>
                 </h:column>
             </h:dataTable>
         </h:form>
@@ -75,6 +74,7 @@
 <p>#{userData.name}</p>
 <p>#{userData.mail}</p>
 <p>#{userData.password}</p>
+<p>#{kintaiBean.nowYearMonth}</p>
     </h:body>
 </html>
 

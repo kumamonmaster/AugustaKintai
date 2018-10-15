@@ -94,14 +94,14 @@ public class KintaiBean {
         for (int i = 1; i <= lastDay; i++) {
             
             // Stringで日付と曜日を設定
-            kintaiDataList.add(new KintaiData(Utility.union(c.get(Calendar.YEAR), c.get(Calendar.MONTH+1)), c.get(Calendar.DAY_OF_MONTH)));
+            kintaiDataList.add(new KintaiData(Utility.union(c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1), c.get(Calendar.DAY_OF_MONTH)));
             // 日付を1日ずらす
             c.add(Calendar.DAY_OF_MONTH, +1);
         }
         
         try {
             // kintaiDataListにデータベースの勤怠データを設定
-            setKintaiData();
+            readKintaiData();
         } catch (NamingException ex) {
             log.log(Level.SEVERE, "Naming例外です", ex);
             ex.printStackTrace();
@@ -143,7 +143,7 @@ public class KintaiBean {
     setKintaiData
     データベースに存在する勤怠データを設定
     */
-    private void setKintaiData() throws SQLException, NamingException {
+    private void readKintaiData() throws SQLException, NamingException {
         
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -156,7 +156,7 @@ public class KintaiBean {
             // データベース接続
             connection = DBController.open();
             
-            // userテーブルからデータを取得
+            // attendanceテーブルからデータを取得
             stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
             stmt.setInt(1, Integer.parseInt(this.nowYearMonth));
             stmt.setString(2, this.userData.getId());
@@ -168,7 +168,7 @@ public class KintaiBean {
                 kintaiDataList.get(rs.getInt("day")-1).setKintaiData(
                                 rs.getTime("start"), rs.getTime("end"), 
                                 rs.getDouble("rest"), rs.getDouble("total"), rs.getDouble("over"), 
-                                rs.getDouble("real"), rs.getString("kbn_id"));
+                                rs.getDouble("real"), rs.getInt("kbn_cd"));
             }
         
         } catch (NamingException ex) {
