@@ -38,7 +38,7 @@ public class Utility {
     public static String conversionDayOfWeek(int ym, int day) {
         
         String dayOfWeek = null;
-        Calendar c = new GregorianCalendar(ym/100,(ym%100)*10,day);
+        Calendar c = new GregorianCalendar(ym/100,(ym%100)-1,day);
         
         int dow = c.get(Calendar.DAY_OF_WEEK);
         

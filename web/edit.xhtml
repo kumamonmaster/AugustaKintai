@@ -17,7 +17,19 @@
                     <f:selectItem itemValue="欠勤" itemLabel="欠勤"/>
                 </h:selectOneMenu>
             </p>
-            <p>出退勤時間<h:inputText/>～<h:inputText/></p>
+            <p>出退勤時間
+                <h:selectOneMenu>
+                    <f:selectItem itemValue="8:30" itemLabel="8:30"/>
+                    <f:selectItem itemValue="9:00" itemLabel="9:00"/>
+                    <f:selectItem itemValue="9:30" itemLabel="9:30"/>
+                </h:selectOneMenu>
+                ～
+                <h:selectOneMenu>
+                    <f:selectItem itemValue="17:30" itemLabel="17:30"/>
+                    <f:selectItem itemValue="18:00" itemLabel="18:00"/>
+                    <f:selectItem itemValue="18:30" itemLabel="18:30"/>
+                </h:selectOneMenu>
+            </p>
             <p>休憩時間<h:inputText/>～<h:inputText/></p>
             <p>備考<h:inputTextarea/></p>
         </h:form>
