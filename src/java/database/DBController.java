@@ -37,8 +37,8 @@ public class DBController {
     */
     public static Connection open() throws SQLException, NamingException {
         
-        //String jndi = "java:comp/env/jdbc/MySQLAWS";
-        String jndi = "java:comp/env/jdbc/MySQL";
+        String jndi = "java:comp/env/jdbc/MySQLAWS";
+        //String jndi = "java:comp/env/jdbc/MySQL";
         
         InitialContext context = null;
         
