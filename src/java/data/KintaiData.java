@@ -8,7 +8,6 @@ package data;
 import java.util.Date;
 import java.sql.Time;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 import util.MathKintai;
 import util.Utility;
 
