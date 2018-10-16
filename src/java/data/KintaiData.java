@@ -9,6 +9,7 @@ import java.util.Date;
 import java.sql.Time;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+import util.MathKintai;
 import util.Utility;
 
 /**
@@ -128,7 +129,8 @@ public class KintaiData {
     }
 
     public Time getTotal() {
-        return total;
+        //return total;
+        return MathKintai.resultTotal(this.start, this.end, this.rest);
     }
 
     public void setTotal(Time total) {
@@ -153,7 +155,8 @@ public class KintaiData {
     }
 
     public Time getOver() {
-        return over;
+        //return over;
+        return MathKintai.resultOver(this.start, this.end, this.rest);
     }
 
     public void setOver(Time over) {
