@@ -166,9 +166,9 @@ public class KintaiBean {
             while (rs.next()) {
                 
                 kintaiDataList.get(rs.getInt("day")-1).setKintaiData(
-                                rs.getTime("start"), rs.getTime("end"), 
-                                rs.getDouble("rest"), rs.getDouble("total"), rs.getDouble("over"), 
-                                rs.getDouble("real"), rs.getInt("kbn_cd"));
+                                rs.getTime("start_time"), rs.getTime("end_time"), 
+                                rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
+                                rs.getTime("real_time"), rs.getInt("kbn_cd"));
             }
         
         } catch (NamingException ex) {
@@ -211,11 +211,11 @@ public class KintaiBean {
         }
     }
 
+    
+    
     public ArrayList<KintaiData> getKintaiDataList() {
         return kintaiDataList;
     }
-    
-    
     
     public void setUserData(UserData userData) {
         
@@ -252,7 +252,7 @@ public class KintaiBean {
     
     public String edit(int ym, String user_id, int day) {
         
-        // データベースへアクセスする
+        // データベースへアクセスするためのキーを登録
         this.kintaiKey.setKey(ym, user_id, day);
         
         return "edit.xhtml";

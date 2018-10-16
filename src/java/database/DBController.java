@@ -29,10 +29,6 @@ public class DBController {
     
     private static Connection connection = null;
     
-    private String url = "jdbc:mysql://localhost:3306/mynumberdb";
-    private String user = "TakafumiSato";
-    private String password = "1234567";
-    
     private static Log log = new Log(DBController.class.getName(),"test.log");
     
     
@@ -41,6 +37,7 @@ public class DBController {
     */
     public static Connection open() throws SQLException, NamingException {
         
+        //String jndi = "java:comp/env/jdbc/MySQLAWS";
         String jndi = "java:comp/env/jdbc/MySQL";
         
         InitialContext context = null;

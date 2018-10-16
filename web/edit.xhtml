@@ -11,37 +11,43 @@
             <p>日付 <h:outputText value="#{kintaiKey.ym}"/> <h:outputText value="#{kintaiKey.day}"/></p>
             <p>
                 区分
-                <h:selectOneMenu>
-                    <f:selectItem itemValue="出勤" itemLabel="出勤"/>
-                    <f:selectItem itemValue="有給" itemLabel="有給"/>
-                    <f:selectItem itemValue="欠勤" itemLabel="欠勤"/>
+                <h:selectOneMenu value="#{editBean.kintaiData.kbnCd}">
+                    <f:selectItem itemValue="1" itemLabel="出勤"/>
+                    <f:selectItem itemValue="2" itemLabel="有給"/>
+                    <f:selectItem itemValue="3" itemLabel="欠勤"/>
                 </h:selectOneMenu>
             </p>
             <p>出退勤時間
-                <h:selectOneMenu>
-                    <f:selectItem itemValue="8:30" itemLabel="8:30"/>
-                    <f:selectItem itemValue="9:00" itemLabel="9:00"/>
-                    <f:selectItem itemValue="9:30" itemLabel="9:30"/>
+                <h:selectOneMenu value="#{editBean.kintaiData.startToStringEdit}">
+                    <f:selectItems value="#{editInput.timeTable}"/>
                 </h:selectOneMenu>
                 ～
-                <h:selectOneMenu>
-                    <f:selectItem itemValue="17:30" itemLabel="17:30"/>
-                    <f:selectItem itemValue="18:00" itemLabel="18:00"/>
-                    <f:selectItem itemValue="18:30" itemLabel="18:30"/>
+                <h:selectOneMenu value="#{editBean.kintaiData.endToStringEdit}">
+                    <f:selectItems value="#{editInput.timeTable}"/>
                 </h:selectOneMenu>
             </p>
-            <p>休憩時間<h:inputText/>～<h:inputText/></p>
+            <p>休憩時間
+                <h:selectOneMenu value="#{editBean.kintaiData.restToString}">
+                    <f:selectItems value="#{editInput.restTable}"/>
+                </h:selectOneMenu>
+            </p>
             <p>備考<h:inputTextarea/></p>
+            <h:commandButton value="戻る" action="#{editBean.back()}"/>
+            <h:commandButton value="登録" action="#{editBean.entry()}"/>
         </h:form>
         年月<h:outputText value="#{editBean.kintaiData.ym}"/>
+        日<h:outputText value="#{editBean.userData.id}"/>
         日<h:outputText value="#{editBean.kintaiData.day}"/>
         出勤<h:outputText value="#{editBean.kintaiData.start}"/>
         退勤<h:outputText value="#{editBean.kintaiData.end}"/>
+        出勤<h:outputText value="#{editBean.kintaiData.startToStringEdit}"/>
+        退勤<h:outputText value="#{editBean.kintaiData.endToStringEdit}"/>
         休憩<h:outputText value="#{editBean.kintaiData.rest}"/>
         残業<h:outputText value="#{editBean.kintaiData.over}"/>
         総<h:outputText value="#{editBean.kintaiData.total}"/>
         実<h:outputText value="#{editBean.kintaiData.real}"/>
         区分<h:outputText value="#{editBean.kintaiData.kbnCd}"/>
+        区分<h:outputText value="#{editInput.restTable}"/>
     </h:body>
 </html>
 

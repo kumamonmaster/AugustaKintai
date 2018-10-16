@@ -7,6 +7,7 @@ package beans;
 
 import data.KintaiData;
 import data.KintaiKey;
+import data.UserData;
 import database.DBController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,6 +37,8 @@ public class EditBean {
     
     @ManagedProperty(value="#{kintaiKey}")
     private KintaiKey kintaiKey;
+    @ManagedProperty(value="#{userData}")
+    private UserData userData;
     
     private KintaiData kintaiData = null;
     
@@ -85,9 +88,9 @@ public class EditBean {
             // 今まで登録されているデータを取得し設定
             if (rs.next()) {
                 kintaiData.setKintaiData(
-                                rs.getTime("start"), rs.getTime("end"), 
-                                rs.getDouble("rest"), rs.getDouble("total"), rs.getDouble("over"), 
-                                rs.getDouble("real"), rs.getInt("kbn_cd"));
+                                rs.getTime("start_time"), rs.getTime("end_time"), 
+                                rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
+                                rs.getTime("real_time"), rs.getInt("kbn_cd"));
             }
         
         } catch (NamingException ex) {
@@ -189,6 +192,76 @@ public class EditBean {
                 ex.printStackTrace();
             }
         }
+    }
+    
+    public String entry() throws SQLException, NamingException {
+        
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            
+            // データベース接続
+            connection = DBController.open();
+            
+            // attendanceテーブルに入力データをセット
+            stmt = connection.prepareStatement("REPLACE INTO attendance (ym,user_id,day,start_time,end_time,rest_time,total_time,real_time,over_time,kbn_cd) VALUES(?,?,?,?,?,?,?,?,?,?)");
+            stmt.setInt(1, this.kintaiData.getYm());
+            stmt.setString(2, this.userData.getId());
+            stmt.setInt(3, this.kintaiData.getDay());
+            stmt.setTime(4, this.kintaiData.getStart());
+            stmt.setTime(5, this.kintaiData.getEnd());
+            stmt.setTime(6, this.kintaiData.getRest());
+            stmt.setTime(7, this.kintaiData.getTotal());
+            stmt.setTime(8, this.kintaiData.getReal());
+            stmt.setTime(9, this.kintaiData.getOver());
+            stmt.setInt(10, this.kintaiData.getKbnCd());
+            stmt.executeQuery();
+        
+        } catch (NamingException ex) {
+            log.log(Level.SEVERE, "Naming例外です", ex);
+            ex.printStackTrace();
+            throw new NamingException();
+        } catch (SQLException ex) {
+            log.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
+            throw new SQLException();
+        } finally {
+            
+            // クローズ
+            
+            try {
+                if (stmt != null)
+                    stmt.close();
+                stmt = null;
+            } catch (SQLException ex) {
+                log.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+            
+            try {
+                if (connection != null)
+                    connection.close();
+                connection = null;
+            } catch (SQLException ex) {
+                log.log(Level.SEVERE, "Connectionクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+        }
+        
+        return "kintai.xhtml";
+    }
+    
+    public String back() {
+        return "kintai.xhtml";
+    }
+
+    public UserData getUserData() {
+        return userData;
+    }
+
+    public void setUserData(UserData userData) {
+        this.userData = userData;
     }
     
     public void setKintaiKey(KintaiKey kintaiKey) {
