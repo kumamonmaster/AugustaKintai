@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import javax.faces.bean.ManagedBean;
 import data.UserData;
 import java.io.Serializable;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
@@ -33,6 +34,7 @@ public class LoginBean {
     @ManagedProperty(value="#{userData}")
     private UserData userData;
 
+    private static final Logger LOG = Log.getLog();
 
     /**
      * Creates a new instance of Login
@@ -49,7 +51,7 @@ public class LoginBean {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
-        Log log = new Log(LoginBean.class.getName(), "test.log");
+        //log = new Log(LoginBean.class.getName(), "test.log");
         
         try {
             
@@ -75,10 +77,10 @@ public class LoginBean {
             }
         
         } catch (NamingException ex) {
-            log.log(Level.SEVERE, "Naming例外です", ex);
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
             ex.printStackTrace();
         } catch (SQLException ex) {
-            log.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             throw new SQLException();
         } finally {
             
@@ -88,7 +90,7 @@ public class LoginBean {
                     rs.close();
                 rs = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
                 ex.printStackTrace();
             }
             
@@ -97,7 +99,7 @@ public class LoginBean {
                     stmt.close();
                 stmt = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
                 ex.printStackTrace();
             }
             
@@ -106,7 +108,7 @@ public class LoginBean {
                     connection.close();
                 connection = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Connectionクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
                 ex.printStackTrace();
             }
         }

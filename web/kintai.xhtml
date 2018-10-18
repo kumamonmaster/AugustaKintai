@@ -27,6 +27,12 @@
                 </h:column>
                 <h:column>
                     <f:facet name="header">
+                    <h:outputText value="区分"/>
+                    </f:facet>
+                    <h:outputText value="#{item.kbnName}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
                     <h:outputText value="出勤時間"/>
                     </f:facet>
                     <h:outputText value="#{item.startToStringKintai}"/>
@@ -39,15 +45,15 @@
                 </h:column>
                 <h:column>
                     <f:facet name="header">
-                    <h:outputText value="休憩時間"/>
-                    </f:facet>
-                    <h:outputText value="#{item.rest}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
                     <h:outputText value="総労働時間"/>
                     </f:facet>
                     <h:outputText value="#{item.total}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="休憩時間"/>
+                    </f:facet>
+                    <h:outputText value="#{item.rest}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
@@ -61,12 +67,6 @@
                     </f:facet>
                     <h:outputText value="#{item.real}"/>
                 </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="区分"/>
-                    </f:facet>
-                    <h:outputText value="#{item.kbnCd}"/>
-                </h:column>
             </h:dataTable>
         </h:form>
 
@@ -75,6 +75,8 @@
 <p>#{userData.mail}</p>
 <p>#{userData.password}</p>
 <p>#{kintaiBean.nowYearMonth}</p>
+<p>#{kintaiBean.kintaiDataList.get(0)}</p>
+<p>#{kintaiBean.kintaiDataList.get(1)}</p>
     </h:body>
 </html>
 

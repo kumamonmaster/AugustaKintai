@@ -11,24 +11,24 @@
             <p>日付 <h:outputText value="#{kintaiKey.ym}"/> <h:outputText value="#{kintaiKey.day}"/></p>
             <p>
                 区分
-                <h:selectOneMenu value="#{editBean.kintaiData.kbnCd}">
-                    <f:selectItem itemValue="1" itemLabel="出勤"/>
-                    <f:selectItem itemValue="2" itemLabel="有給"/>
-                    <f:selectItem itemValue="3" itemLabel="欠勤"/>
+                <h:selectOneMenu value="#{editBean.kintaiData.kbnCd}" onchange="submit()">
+                    <f:selectItems value="#{editInputTable.kbnTable}"/>
                 </h:selectOneMenu>
             </p>
+        </h:form>
+        <h:form>
             <p>出退勤時間
-                <h:selectOneMenu value="#{editBean.kintaiData.startToStringEdit}">
-                    <f:selectItems value="#{editInput.timeTable}"/>
+                <h:selectOneMenu value="#{editBean.kintaiData.startToStringEdit}" disabled="#{editBean.disabled}">
+                    <f:selectItems value="#{editInputTable.timeTable}"/>
                 </h:selectOneMenu>
                 ～
-                <h:selectOneMenu value="#{editBean.kintaiData.endToStringEdit}">
-                    <f:selectItems value="#{editInput.timeTable}"/>
+                <h:selectOneMenu value="#{editBean.kintaiData.endToStringEdit}" disabled="#{editBean.disabled}">
+                    <f:selectItems value="#{editInputTable.timeTable}"/>
                 </h:selectOneMenu>
             </p>
             <p>休憩時間
-                <h:selectOneMenu value="#{editBean.kintaiData.restToString}">
-                    <f:selectItems value="#{editInput.restTable}"/>
+                <h:selectOneMenu value="#{editBean.kintaiData.restToString}" disabled="#{editBean.disabled}">
+                    <f:selectItems value="#{editInputTable.restTable}"/>
                 </h:selectOneMenu>
             </p>
             <p>備考<h:inputTextarea/></p>
@@ -47,7 +47,8 @@
         総<h:outputText value="#{editBean.kintaiData.total}"/>
         実<h:outputText value="#{editBean.kintaiData.real}"/>
         区分<h:outputText value="#{editBean.kintaiData.kbnCd}"/>
-        区分<h:outputText value="#{editInput.restTable}"/>
+        区分<h:outputText value="#{editBean.disabled}"/>
+        区分<h:outputText value="#{editBean.kintaiData.startToStringEdit}"/>
     </h:body>
 </html>
 

@@ -15,14 +15,14 @@ import java.util.GregorianCalendar;
  */
 public class Utility {
     
-    public static Date conversionSQLDateToDate(java.sql.Date date) {
-        Date d = new Date();
-        d.setTime(date.getTime());
+    public static Date conversionSQLDateToDate(java.sql.Date sqlDate) {
+        java.util.Date utilDate = new java.util.Date();
+        utilDate.setTime(sqlDate.getTime());
         
-        return d;
+        return utilDate;
     }
     
-    public static String conversionDateToString(Date date) {
+    public static String conversionDateToString(java.util.Date date) {
         // DateからStringに変換
         String text = null;
         Calendar c = new GregorianCalendar();
@@ -71,7 +71,7 @@ public class Utility {
         return dayOfWeek;
     }
     
-    public static int union(int x, int y) {
+    public static int unionInt(int x, int y) {
         String s = String.valueOf(x) + String.valueOf(y);
         
         return Integer.parseInt(s);

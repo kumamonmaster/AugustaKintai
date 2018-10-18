@@ -5,8 +5,12 @@
  */
 package data;
 
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.Date;
 import java.sql.Time;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import util.MathKintai;
 import util.Utility;
@@ -26,6 +30,7 @@ public class KintaiData {
     private Time over = null;
     private Time real = null;
     private int kbn_cd = 0;
+    private String kbnName = null;
     
     private boolean dbFlag = false;
 
@@ -41,11 +46,12 @@ public class KintaiData {
         this.over = new Time(Time.valueOf("00:00:00").getTime());
         this.real = new Time(Time.valueOf("00:00:00").getTime());
         this.kbn_cd = 1;
+        this.kbnName = "";
         
         this.dbFlag = false;
     }
     
-    public void setKintaiData(Time start, Time end, Time rest, Time total, Time over, Time real, int kbn_cd) {
+    public void setData(Time start, Time end, Time rest, Time total, Time over, Time real, int kbn_cd, String kbnName) {
         this.start = start;
         this.end = end;
         this.total = total;
@@ -53,6 +59,7 @@ public class KintaiData {
         this.over = over;
         this.real = real;
         this.kbn_cd = kbn_cd;
+        this.kbnName = kbnName;
         
         this.dbFlag = true;
     }
@@ -80,11 +87,29 @@ public class KintaiData {
     }
 
     public int getKbnCd() {
+        
         return kbn_cd;
     }
 
     public void setKbnCd(int kbn_cd) {
+        PrintStream ps = null;
+            try {
+                ps = new PrintStream("log.txt");
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(KintaiData.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            ps.print(kbn_cd);
+            System.setOut(ps);
+            ps.close();
         this.kbn_cd = kbn_cd;
+    }
+
+    public String getKbnName() {
+        return kbnName;
+    }
+
+    public void setKbnName(String kbnName) {
+        this.kbnName = kbnName;
     }
 
     public String getStartToStringKintai() {
@@ -96,7 +121,10 @@ public class KintaiData {
     }
     
     public void setStartToStringEdit(String start) {
-        this.start = Time.valueOf(start);
+        if (start != "")
+            this.start = Time.valueOf(start);
+        else
+            this.start = Time.valueOf("00:00:00");
     }
     
     public Time getStart() {
@@ -116,7 +144,10 @@ public class KintaiData {
     }
     
     public void setEndToStringEdit(String end) {
-        this.end = Time.valueOf(end);
+        if (end != "")
+            this.end = Time.valueOf(end);
+        else
+            this.end = Time.valueOf("00:00:00");
     }
     
     public Time getEnd() {
@@ -142,7 +173,10 @@ public class KintaiData {
     }
     
     public void setRestToString(String rest) {
-        this.rest = Time.valueOf(rest);
+        if (rest != "")
+            this.rest = Time.valueOf(rest);
+        else
+            this.rest = Time.valueOf("00:00:00");
     }
 
     public Time getRest() {
