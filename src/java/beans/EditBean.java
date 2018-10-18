@@ -8,7 +8,9 @@ package beans;
 import data.KintaiData;
 import data.KintaiKey;
 import data.UserData;
+import database.AttendanceTableController;
 import database.DBController;
+import database.WorkingPatternTableController;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.sql.Connection;
@@ -43,6 +45,9 @@ public class EditBean {
     @ManagedProperty(value="#{userData}")
     private UserData userData;
     
+    private AttendanceTableController atc = null;
+    private WorkingPatternTableController wtc = null;
+    
     private KintaiData kintaiData = null;
     
     private boolean disabled = false;
@@ -58,7 +63,18 @@ public class EditBean {
     
     @PostConstruct
     public void init() {
-         kintaiData = new KintaiData(kintaiKey.getYm(),kintaiKey.getDay());
+        atc = new AttendanceTableController();
+        wtc = new WorkingPatternTableController();
+        
+        try {
+            initKintaiData();
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
+            ex.printStackTrace();
+        }
         
         try {
             // 該当の勤怠データを取得
@@ -72,62 +88,49 @@ public class EditBean {
         }
     }
     
-    private void readKintaiData() throws SQLException, NamingException {
+    private void initKintaiData() throws SQLException, NamingException {
+        
+        kintaiData = new KintaiData(kintaiKey.getYm(),kintaiKey.getDay());
         
         Connection connection = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        
         
         try {
-            
             // データベース接続
             connection = DBController.open();
             
-            // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ? AND day = ?");
-            stmt.setInt(1, this.kintaiKey.getYm());
-            stmt.setString(2, this.kintaiKey.getUserId());
-            stmt.setInt(3, this.kintaiKey.getDay());
-            rs = stmt.executeQuery();
-
-            // 今まで登録されているデータを取得し設定
-            if (rs.next()) {
-                kintaiData.setData(
-                                rs.getTime("start_time"), rs.getTime("end_time"), 
-                                rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
-                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "");
-            }
-        
-        } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, "Naming例外です", ex);
-            ex.printStackTrace();
-            throw new NamingException();
+            // 勤怠データの初期値をユーザーの勤務パターンに合わせる
+            wtc.getTableUseEdit(connection, userData.getWorkptn_cd(), kintaiData);
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
             throw new SQLException();
         } finally {
-            
-            // クローズ
             try {
-                if (rs != null)
-                    rs.close();
-                rs = null;
+                if (connection != null)
+                    connection.close();
+                connection = null;
             } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
                 ex.printStackTrace();
             }
+        }
+    }
+    
+    private void readKintaiData() throws SQLException, NamingException {
+        
+        Connection connection = null;
+        
+        try {
+            // データベース接続
+            connection = DBController.open();
             
-            try {
-                if (stmt != null)
-                    stmt.close();
-                stmt = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
-                ex.printStackTrace();
-            }
+            atc.getTableUseEdit(connection, this.kintaiKey.getYm(), this.kintaiKey.getUserId(), this.kintaiKey.getDay(), kintaiData);
             
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            throw new SQLException();
+        } finally {
             try {
                 if (connection != null)
                     connection.close();
@@ -142,7 +145,6 @@ public class EditBean {
     public String entry() throws SQLException, NamingException {
         
         Connection connection = null;
-        PreparedStatement stmt = null;
         
         // disableフラグがtrueか
         // trueの場合、出退勤時間、休憩時間の設定は無効
@@ -153,46 +155,16 @@ public class EditBean {
         }
         
         try {
-            
             // データベース接続
             connection = DBController.open();
             
-            // attendanceテーブルに入力データをセット
-            stmt = connection.prepareStatement("REPLACE INTO attendance (ym,user_id,day,start_time,end_time,rest_time,total_time,real_time,over_time,kbn_cd) VALUES(?,?,?,?,?,?,?,?,?,?)");
-            stmt.setInt(1, this.kintaiData.getYm());
-            stmt.setString(2, this.userData.getId());
-            stmt.setInt(3, this.kintaiData.getDay());
-            stmt.setTime(4, this.kintaiData.getStart());
-            stmt.setTime(5, this.kintaiData.getEnd());
-            stmt.setTime(6, this.kintaiData.getRest());
-            stmt.setTime(7, this.kintaiData.getTotal());
-            stmt.setTime(8, this.kintaiData.getReal());
-            stmt.setTime(9, this.kintaiData.getOver());
-            stmt.setInt(10, this.kintaiData.getKbnCd());
+            atc.setTableUseEdit(connection, this.kintaiData, this.userData);
             
-            stmt.executeQuery();
-        
-        } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, "Naming例外です", ex);
-            ex.printStackTrace();
-            throw new NamingException();
         } catch (SQLException ex) {
-            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, null, ex);
             ex.printStackTrace();
             throw new SQLException();
         } finally {
-            
-            // クローズ
-            
-            try {
-                if (stmt != null)
-                    stmt.close();
-                stmt = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
             try {
                 if (connection != null)
                     connection.close();
