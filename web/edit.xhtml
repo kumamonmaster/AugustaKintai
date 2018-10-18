@@ -15,19 +15,19 @@
                     <f:selectItems value="#{editInputTable.kbnTable}"/>
                 </h:selectOneMenu>
             </p>
-        </h:form>
-        <h:form>
+        <!--</h:form>-->
+        <!--<h:form>-->
             <p>出退勤時間
-                <h:selectOneMenu value="#{editBean.kintaiData.startToStringEdit}" disabled="#{editBean.disabled}">
+                <h:selectOneMenu value="#{editBean.kintaiData.startToStringEdit}" disabled="#{editBean.disabled}" onchange="submit()">
                     <f:selectItems value="#{editInputTable.timeTable}"/>
                 </h:selectOneMenu>
                 ～
-                <h:selectOneMenu value="#{editBean.kintaiData.endToStringEdit}" disabled="#{editBean.disabled}">
+                <h:selectOneMenu value="#{editBean.kintaiData.endToStringEdit}" disabled="#{editBean.disabled}" onchange="submit()">
                     <f:selectItems value="#{editInputTable.timeTable}"/>
                 </h:selectOneMenu>
             </p>
             <p>休憩時間
-                <h:selectOneMenu value="#{editBean.kintaiData.restToString}" disabled="#{editBean.disabled}">
+                <h:selectOneMenu value="#{editBean.kintaiData.restToString}" disabled="#{editBean.disabled}" onchange="submit()">
                     <f:selectItems value="#{editInputTable.restTable}"/>
                 </h:selectOneMenu>
             </p>

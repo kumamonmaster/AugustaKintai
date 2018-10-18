@@ -63,4 +63,21 @@ public class MathKintai {
         
         return over;
     }
+    
+    public static Time resultReal(Time start, Time end, Time rest, int kbn_cd) {
+        
+        int[] hm = mathTotal(start, end, rest);
+        
+        Time real = null;
+        // 有休分はマイナスする
+        if (kbn_cd == 4) {
+            real = new Time(Time.valueOf("08:00:00").getTime());
+        } else if (kbn_cd == 5 || kbn_cd == 6) {
+            real = new Time(Time.valueOf(String.valueOf(hm[HOUR]-4)+":"+String.valueOf(hm[MINUTE])+":00").getTime());
+        } else {
+            real = new Time(Time.valueOf(String.valueOf(hm[HOUR])+":"+String.valueOf(hm[MINUTE])+":00").getTime());
+        }
+        
+        return real;
+    }
 }

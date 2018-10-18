@@ -78,6 +78,7 @@ public class EditBean {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
+        
         try {
             
             // データベース接続
@@ -142,6 +143,14 @@ public class EditBean {
         
         Connection connection = null;
         PreparedStatement stmt = null;
+        
+        // disableフラグがtrueか
+        // trueの場合、出退勤時間、休憩時間の設定は無効
+        if (this.disabled) {
+            this.kintaiData.setStartToStringEdit("00:00:00");
+            this.kintaiData.setEndToStringEdit("00:00:00");
+            this.kintaiData.setRestToString("00:00:00");
+        }
         
         try {
             

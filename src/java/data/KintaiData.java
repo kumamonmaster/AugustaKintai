@@ -197,7 +197,7 @@ public class KintaiData {
     }
 
     public Time getReal() {
-        return real;
+        return MathKintai.resultReal(this.start, this.end, this.rest, this.kbn_cd);
     }
 
     public void setReal(Time real) {
