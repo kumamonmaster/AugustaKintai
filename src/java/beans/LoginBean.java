@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import javax.faces.bean.ManagedBean;
 import data.UserData;
+import database.UserTableController;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedProperty;
@@ -33,78 +34,39 @@ public class LoginBean {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+    
+    private UserTableController utc = null;
 
     private static final Logger LOG = Log.getLog();
 
-    /**
-     * Creates a new instance of Login
-     */
     
+    public LoginBean() {
+        utc = new UserTableController();
+    }
     
     public void setUserData(UserData userData) {
         
         this.userData = userData;
     }
 
-    public String login() throws SQLException, IOException {
-        Connection connection = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+    public String login() throws SQLException, NamingException {
         
-        //log = new Log(LoginBean.class.getName(), "test.log");
+        Connection connection = null;
+        String nextPage = null;
         
         try {
-            
             // データベース接続
             connection = DBController.open();
             
-            // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT id,name,password FROM user WHERE mail = ?");
-            stmt.setString(1, this.userData.getMail());
-            rs = stmt.executeQuery();
-
-            // パスワード一致していたらページ遷移
-            if( rs.next() ) {
-                if (this.userData.getPassword().equals(rs.getString("password"))) {
-                    // ユーザーデータを作成
-                    //this.userData.setId(rs.getString("id"));
-                    //userData = new UserData(rs.getString("id"),rs.getString("name"),this.address);
-                    this.userData.setId(rs.getString("id"));
-                    this.userData.setName(rs.getString("name"));
-
-                    return "kintai.xhtml";
-                }
-            }
-        
-        } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, "Naming例外です", ex);
-            ex.printStackTrace();
+            nextPage = utc.selectOnly(connection, this.userData);
+            
         } catch (SQLException ex) {
-            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             throw new SQLException();
         } finally {
-            
-            // クローズ
             try {
-                if (rs != null)
-                    rs.close();
-                rs = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
-            try {
-                if (stmt != null)
-                    stmt.close();
-                stmt = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
-            try {
-                if (connection != null)
+            if (connection != null)
                     connection.close();
                 connection = null;
             } catch (SQLException ex) {
@@ -112,8 +74,7 @@ public class LoginBean {
                 ex.printStackTrace();
             }
         }
-        
-        // 一致しなかったらとりあえずページ遷移させない
-        return null;
+
+        return nextPage;
     }
 }
