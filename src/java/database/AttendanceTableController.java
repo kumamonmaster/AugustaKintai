@@ -26,10 +26,9 @@ public class AttendanceTableController {
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
-    public void selectAll(Connection connection, int nowYearMonth, String user_id, ArrayList<KintaiData> dataList) throws SQLException {
+    public void getTableUseKintai(Connection connection, int nowYearMonth, String user_id, ArrayList<KintaiData> dataList) throws SQLException {
         PreparedStatement stmt = null;
-        ResultSet rsAttendance = null;
-        ResultSet rsKbn = null;
+        ResultSet rs = null;
         
         try {
             
@@ -37,22 +36,15 @@ public class AttendanceTableController {
             stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
             stmt.setInt(1, nowYearMonth);
             stmt.setString(2, user_id);
-            rsAttendance = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             // 今まで登録されているデータを取得し設定
-            while (rsAttendance.next()) {
+            while (rs.next()) {
                 
-                // 区分テーブルからデータ取得
-                stmt = connection.prepareStatement("SELECT * FROM kbn WHERE kbn_cd = ?");
-                stmt.setInt(1, rsAttendance.getInt("kbn_cd"));
-                rsKbn = stmt.executeQuery();
-                
-                rsKbn.next();
-                
-                dataList.get(rsAttendance.getInt("day")-1).setData(
-                                rsAttendance.getTime("start_time"), rsAttendance.getTime("end_time"), 
-                                rsAttendance.getTime("rest_time"), rsAttendance.getTime("total_time"), rsAttendance.getTime("over_time"), 
-                                rsAttendance.getTime("real_time"), rsAttendance.getInt("kbn_cd"), rsKbn.getString("name") );
+                dataList.get(rs.getInt("day")-1).setData(
+                                rs.getTime("start_time"), rs.getTime("end_time"), 
+                                rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
+                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "" );
                 
             }
         } catch (SQLException ex) {
@@ -63,18 +55,9 @@ public class AttendanceTableController {
             
             // クローズ
             try {
-                if (rsAttendance != null)
-                    rsAttendance.close();
-                rsAttendance = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
-            try {
-                if (rsKbn != null)
-                    rsKbn.close();
-                rsKbn = null;
+                if (rs != null)
+                    rs.close();
+                rs = null;
             } catch (SQLException ex) {
                 LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
                 ex.printStackTrace();
@@ -92,7 +75,7 @@ public class AttendanceTableController {
     }
     
     
-    public void selectOnly(Connection connection, int nowYearMonth, String user_id, int day, KintaiData data) throws SQLException {
+    public void getTableUseEdit(Connection connection, int nowYearMonth, String user_id, int day, KintaiData data) throws SQLException {
     
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -142,7 +125,7 @@ public class AttendanceTableController {
         }
     }
     
-    public void replaceOnly(Connection connection, KintaiData kintaiData, UserData userData) throws SQLException {
+    public void setTableUseEdit(Connection connection, KintaiData kintaiData, UserData userData) throws SQLException {
         
         PreparedStatement stmt = null;
         

@@ -10,6 +10,7 @@ import data.KintaiKey;
 import data.UserData;
 import database.AttendanceTableController;
 import database.DBController;
+import database.KbnTableController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,7 +46,8 @@ public class KintaiBean {
     @ManagedProperty(value="#{kintaiKey}")
     private KintaiKey kintaiKey;
     
-    AttendanceTableController atc = null;
+    private AttendanceTableController atc = null;
+    private KbnTableController ktc = null;
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
@@ -67,6 +69,7 @@ public class KintaiBean {
     public void init() {
         
         atc = new AttendanceTableController();
+        ktc = new KbnTableController();
         
         try {
             // rowData初期化
@@ -165,10 +168,14 @@ public class KintaiBean {
             // データベース接続
             connection = DBController.open();
         
-            atc.selectAll(connection, Integer.parseInt(nowYearMonth), this.userData.getId(), kintaiDataList);
+            atc.getTableUseKintai(connection, Integer.parseInt(nowYearMonth), this.userData.getId(), kintaiDataList);
+            
+            for (KintaiData kintaiData :kintaiDataList) {
+                ktc.getTableUseKintai(connection, kintaiData.getKbnCd(), kintaiData);
+            }
             
         } catch (SQLException ex) {
-            Logger.getLogger(KintaiBean.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
             throw new SQLException();
         } finally {
             try {

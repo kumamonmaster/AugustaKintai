@@ -10,6 +10,7 @@ import data.KintaiKey;
 import data.UserData;
 import database.AttendanceTableController;
 import database.DBController;
+import database.WorkingPatternTableController;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.sql.Connection;
@@ -45,6 +46,8 @@ public class EditBean {
     private UserData userData;
     
     private AttendanceTableController atc = null;
+    private WorkingPatternTableController wtc = null;
+    
     private KintaiData kintaiData = null;
     
     private boolean disabled = false;
@@ -61,7 +64,17 @@ public class EditBean {
     @PostConstruct
     public void init() {
         atc = new AttendanceTableController();
-         kintaiData = new KintaiData(kintaiKey.getYm(),kintaiKey.getDay());
+        wtc = new WorkingPatternTableController();
+        
+        try {
+            initKintaiData();
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
+            ex.printStackTrace();
+        }
         
         try {
             // 該当の勤怠データを取得
@@ -75,6 +88,34 @@ public class EditBean {
         }
     }
     
+    private void initKintaiData() throws SQLException, NamingException {
+        
+        kintaiData = new KintaiData(kintaiKey.getYm(),kintaiKey.getDay());
+        
+        Connection connection = null;
+        
+        try {
+            // データベース接続
+            connection = DBController.open();
+            
+            // 勤怠データの初期値をユーザーの勤務パターンに合わせる
+            wtc.getTableUseEdit(connection, userData.getWorkptn_cd(), kintaiData);
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
+            throw new SQLException();
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                connection = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+        }
+    }
+    
     private void readKintaiData() throws SQLException, NamingException {
         
         Connection connection = null;
@@ -83,7 +124,7 @@ public class EditBean {
             // データベース接続
             connection = DBController.open();
             
-            atc.selectOnly(connection, this.kintaiKey.getYm(), this.kintaiKey.getUserId(), this.kintaiKey.getDay(), kintaiData);
+            atc.getTableUseEdit(connection, this.kintaiKey.getYm(), this.kintaiKey.getUserId(), this.kintaiKey.getDay(), kintaiData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -117,7 +158,7 @@ public class EditBean {
             // データベース接続
             connection = DBController.open();
             
-            atc.replaceOnly(connection, this.kintaiData, this.userData);
+            atc.setTableUseEdit(connection, this.kintaiData, this.userData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);

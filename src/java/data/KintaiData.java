@@ -39,12 +39,12 @@ public class KintaiData {
 
         this.ym = ym;
         this.day = day;
-        this.start = new Time(Time.valueOf("09:00:00").getTime());
-        this.end = new Time(Time.valueOf("18:00:00").getTime());
-        this.total = new Time(Time.valueOf("00:00:00").getTime());
-        this.rest = new Time(Time.valueOf("01:00:00").getTime());
-        this.over = new Time(Time.valueOf("00:00:00").getTime());
-        this.real = new Time(Time.valueOf("00:00:00").getTime());
+        this.start = null;
+        this.end = null;
+        this.total = null;
+        this.rest = null;
+        this.over = null;
+        this.real = null;
         this.kbn_cd = 1;
         this.kbnName = "";
         
@@ -87,20 +87,10 @@ public class KintaiData {
     }
 
     public int getKbnCd() {
-        
         return kbn_cd;
     }
 
     public void setKbnCd(int kbn_cd) {
-        PrintStream ps = null;
-            try {
-                ps = new PrintStream("log.txt");
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(KintaiData.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            ps.print(kbn_cd);
-            System.setOut(ps);
-            ps.close();
         this.kbn_cd = kbn_cd;
     }
 
@@ -159,8 +149,10 @@ public class KintaiData {
     }
 
     public Time getTotal() {
-        //return total;
-        return MathKintai.resultTotal(this.start, this.end, this.rest);
+        if (dbFlag)
+            return MathKintai.resultTotal(this.start, this.end, this.rest);
+        else
+            return total;
     }
 
     public void setTotal(Time total) {
@@ -169,7 +161,6 @@ public class KintaiData {
     
     public String getRestToString() {
         return (dbFlag) ? rest.toString() : "";
-        //return end;
     }
     
     public void setRestToString(String rest) {
@@ -188,8 +179,10 @@ public class KintaiData {
     }
 
     public Time getOver() {
-        //return over;
-        return MathKintai.resultOver(this.start, this.end, this.rest);
+        if (dbFlag)
+            return MathKintai.resultOver(this.start, this.end, this.rest);
+        else
+            return over;
     }
 
     public void setOver(Time over) {
@@ -197,7 +190,10 @@ public class KintaiData {
     }
 
     public Time getReal() {
-        return MathKintai.resultReal(this.start, this.end, this.rest, this.kbn_cd);
+        if (dbFlag)
+            return MathKintai.resultReal(this.start, this.end, this.rest, this.kbn_cd);
+        else
+            return real;
     }
 
     public void setReal(Time real) {
