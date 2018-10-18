@@ -21,6 +21,7 @@ public class UserData implements Serializable {
     private String name;
     private String mail;
     private String password;
+    private int workptn_cd;
     
     public UserData(){
         
@@ -56,6 +57,14 @@ public class UserData implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getWorkptn_cd() {
+        return workptn_cd;
+    }
+
+    public void setWorkptn_cd(int workptn_cd) {
+        this.workptn_cd = workptn_cd;
     }
     
 }

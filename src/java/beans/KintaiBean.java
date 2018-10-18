@@ -8,7 +8,9 @@ package beans;
 import data.KintaiData;
 import data.KintaiKey;
 import data.UserData;
+import database.AttendanceTableController;
 import database.DBController;
+import database.KbnTableController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,6 +46,9 @@ public class KintaiBean {
     @ManagedProperty(value="#{kintaiKey}")
     private KintaiKey kintaiKey;
     
+    private AttendanceTableController atc = null;
+    private KbnTableController ktc = null;
+    
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
@@ -63,6 +68,8 @@ public class KintaiBean {
     @PostConstruct
     public void init() {
         
+        atc = new AttendanceTableController();
+        ktc = new KbnTableController();
         
         try {
             // rowData初期化
@@ -158,70 +165,19 @@ public class KintaiBean {
         ResultSet rsKbn = null;
         
         try {
-            
             // データベース接続
             connection = DBController.open();
-            
-            // attendanceテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
-            stmt.setInt(1, Integer.parseInt(this.nowYearMonth));
-            stmt.setString(2, this.userData.getId());
-            rsAttendance = stmt.executeQuery();
-
-            // 今まで登録されているデータを取得し設定
-            while (rsAttendance.next()) {
-                
-                // 区分テーブルからデータ取得
-                stmt = connection.prepareStatement("SELECT * FROM kbn WHERE kbn_cd = ?");
-                stmt.setInt(1, rsAttendance.getInt("kbn_cd"));
-                rsKbn = stmt.executeQuery();
-                
-                rsKbn.next();
-                
-                kintaiDataList.get(rsAttendance.getInt("day")-1).setData(
-                                rsAttendance.getTime("start_time"), rsAttendance.getTime("end_time"), 
-                                rsAttendance.getTime("rest_time"), rsAttendance.getTime("total_time"), rsAttendance.getTime("over_time"), 
-                                rsAttendance.getTime("real_time"), rsAttendance.getInt("kbn_cd"), rsKbn.getString("name") );
-            }
         
-        } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, "Naming例外です", ex);
-            ex.printStackTrace();
-            throw new NamingException();
+            atc.getTableUseKintai(connection, Integer.parseInt(nowYearMonth), this.userData.getId(), kintaiDataList);
+            
+            for (KintaiData kintaiData :kintaiDataList) {
+                ktc.getTableUseKintai(connection, kintaiData.getKbnCd(), kintaiData);
+            }
+            
         } catch (SQLException ex) {
-            LOG.log(Level.SEVERE, "SQL例外です", ex);
-            ex.printStackTrace();
+            LOG.log(Level.SEVERE, null, ex);
             throw new SQLException();
         } finally {
-            
-            // クローズ
-            try {
-                if (rsAttendance != null)
-                    rsAttendance.close();
-                rsAttendance = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
-            try {
-                if (rsKbn != null)
-                    rsKbn.close();
-                rsKbn = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
-            try {
-                if (stmt != null)
-                    stmt.close();
-                stmt = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
             try {
                 if (connection != null)
                     connection.close();
