@@ -11,16 +11,16 @@
     <h:body>
         <div class="container">
             <h:form>
-            <div class="form-group">
-                <label for="inputEmail">メールアドレス</label>
-                <h:inputText value="#{userData.mail}" id="inputEmail" styleClass="form-control" p:placeholder="example@augusta-inc.co.jp"/>
-            </div>
-            <div class="form-group">
-                <label for="inputPassword">パスワード</label>
-                <h:inputText value="#{userData.password}" id="inputPassword" styleClass="form-control" p:type="password" p:placeholder="password"/>
-            </div>
-            <h:commandButton value="ログイン" action="#{loginBean.login()}" styleClass="btn btn-primary"/>
-        </h:form>
+                <div class="form-group">
+                    <label for="inputEmail">メールアドレス</label>
+                    <h:inputText value="#{userData.mail}" id="inputEmail" styleClass="form-control" p:placeholder="example@augusta-inc.co.jp"/>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">パスワード</label>
+                    <h:inputText value="#{userData.password}" id="inputPassword" styleClass="form-control" p:type="password" p:placeholder="password"/>
+                </div>
+                <h:commandButton value="ログイン" action="#{loginBean.login()}" styleClass="btn btn-primary"/>
+            </h:form>
         </div>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
