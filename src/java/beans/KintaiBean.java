@@ -17,14 +17,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.naming.NamingException;
-import util.Utility;
 import util.Log;
+import util.Utility;
 
 /**
  *
@@ -34,7 +36,7 @@ import util.Log;
  * 
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class KintaiBean {
 
     @ManagedProperty(value="#{userData}")
@@ -42,13 +44,15 @@ public class KintaiBean {
     @ManagedProperty(value="#{kintaiKey}")
     private KintaiKey kintaiKey;
     
-    private ArrayList<KintaiData> kintaiDataList = null;
     // ログ生成
-    private Log log = new Log(LoginBean.class.getName(), "test.log");
+    private static final Logger LOG = Log.getLog();
+    
+    private ArrayList<KintaiData> kintaiDataList = null;
     // 選択月度リスト
     private ArrayList<String> yearMonthList = null;
     // 今月度
     private String nowYearMonth = null;
+    
     
     /*
     KintaiBeanコンストラクタ
@@ -59,14 +63,15 @@ public class KintaiBean {
     @PostConstruct
     public void init() {
         
+        
         try {
             // rowData初期化
             initKintaiData();
         } catch (SQLException ex) {
-            log.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
         } catch (NamingException ex) {
-            log.log(Level.SEVERE, "Naming例外です", ex);
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
             ex.printStackTrace();
         }
     }
@@ -94,7 +99,7 @@ public class KintaiBean {
         for (int i = 1; i <= lastDay; i++) {
             
             // Stringで日付と曜日を設定
-            kintaiDataList.add(new KintaiData(Utility.union(c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1), c.get(Calendar.DAY_OF_MONTH)));
+            kintaiDataList.add(new KintaiData(Utility.unionInt(c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1), c.get(Calendar.DAY_OF_MONTH)));
             // 日付を1日ずらす
             c.add(Calendar.DAY_OF_MONTH, +1);
         }
@@ -103,11 +108,11 @@ public class KintaiBean {
             // kintaiDataListにデータベースの勤怠データを設定
             readKintaiData();
         } catch (NamingException ex) {
-            log.log(Level.SEVERE, "Naming例外です", ex);
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
             ex.printStackTrace();
             throw new NamingException();
         } catch (SQLException ex) {
-            log.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
             throw new NamingException();
         }
@@ -136,9 +141,11 @@ public class KintaiBean {
             nowYearMonth = String.valueOf(c.get(Calendar.YEAR)) + String.valueOf(c.get(Calendar.MONTH)+1);
         }
     }
+    
     public String getNowYearMonth() {
         return nowYearMonth;
     }
+    
     /*
     setKintaiData
     データベースに存在する勤怠データを設定
@@ -147,9 +154,8 @@ public class KintaiBean {
         
         Connection connection = null;
         PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Calendar c_sql = new GregorianCalendar();
-        Calendar c_kintai = new GregorianCalendar();
+        ResultSet rsAttendance = null;
+        ResultSet rsKbn = null;
         
         try {
             
@@ -160,34 +166,50 @@ public class KintaiBean {
             stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
             stmt.setInt(1, Integer.parseInt(this.nowYearMonth));
             stmt.setString(2, this.userData.getId());
-            rs = stmt.executeQuery();
+            rsAttendance = stmt.executeQuery();
 
             // 今まで登録されているデータを取得し設定
-            while (rs.next()) {
+            while (rsAttendance.next()) {
                 
-                kintaiDataList.get(rs.getInt("day")-1).setKintaiData(
-                                rs.getTime("start_time"), rs.getTime("end_time"), 
-                                rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
-                                rs.getTime("real_time"), rs.getInt("kbn_cd"));
+                // 区分テーブルからデータ取得
+                stmt = connection.prepareStatement("SELECT * FROM kbn WHERE kbn_cd = ?");
+                stmt.setInt(1, rsAttendance.getInt("kbn_cd"));
+                rsKbn = stmt.executeQuery();
+                
+                rsKbn.next();
+                
+                kintaiDataList.get(rsAttendance.getInt("day")-1).setData(
+                                rsAttendance.getTime("start_time"), rsAttendance.getTime("end_time"), 
+                                rsAttendance.getTime("rest_time"), rsAttendance.getTime("total_time"), rsAttendance.getTime("over_time"), 
+                                rsAttendance.getTime("real_time"), rsAttendance.getInt("kbn_cd"), rsKbn.getString("name") );
             }
         
         } catch (NamingException ex) {
-            log.log(Level.SEVERE, "Naming例外です", ex);
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
             ex.printStackTrace();
             throw new NamingException();
         } catch (SQLException ex) {
-            log.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
             throw new SQLException();
         } finally {
             
             // クローズ
             try {
-                if (rs != null)
-                    rs.close();
-                rs = null;
+                if (rsAttendance != null)
+                    rsAttendance.close();
+                rsAttendance = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+            
+            try {
+                if (rsKbn != null)
+                    rsKbn.close();
+                rsKbn = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
                 ex.printStackTrace();
             }
             
@@ -196,7 +218,7 @@ public class KintaiBean {
                     stmt.close();
                 stmt = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
                 ex.printStackTrace();
             }
             
@@ -205,12 +227,11 @@ public class KintaiBean {
                     connection.close();
                 connection = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Connectionクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
                 ex.printStackTrace();
             }
         }
     }
-
     
     
     public ArrayList<KintaiData> getKintaiDataList() {

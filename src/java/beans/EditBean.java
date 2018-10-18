@@ -9,6 +9,8 @@ import data.KintaiData;
 import data.KintaiKey;
 import data.UserData;
 import database.DBController;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,9 +24,10 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.naming.NamingException;
-import util.Utility;
 import util.Log;
+import util.Utility;
 
 
 /**
@@ -32,7 +35,7 @@ import util.Log;
  * @author 佐藤孝史
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class EditBean {
     
     @ManagedProperty(value="#{kintaiKey}")
@@ -42,8 +45,10 @@ public class EditBean {
     
     private KintaiData kintaiData = null;
     
+    private boolean disabled = false;
+    
     // ログ生成
-    private Log log = new Log(LoginBean.class.getName(), "test.log");
+    private static final Logger LOG = Log.getLog();
 
     /**
      * Creates a new instance of EditBean
@@ -59,10 +64,10 @@ public class EditBean {
             // 該当の勤怠データを取得
             readKintaiData();
         } catch (SQLException ex) {
-            log.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
         } catch (NamingException ex) {
-            log.log(Level.SEVERE, "Naming例外です", ex);
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
             ex.printStackTrace();
         }
     }
@@ -87,18 +92,18 @@ public class EditBean {
 
             // 今まで登録されているデータを取得し設定
             if (rs.next()) {
-                kintaiData.setKintaiData(
+                kintaiData.setData(
                                 rs.getTime("start_time"), rs.getTime("end_time"), 
                                 rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
-                                rs.getTime("real_time"), rs.getInt("kbn_cd"));
+                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "");
             }
         
         } catch (NamingException ex) {
-            log.log(Level.SEVERE, "Naming例外です", ex);
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
             ex.printStackTrace();
             throw new NamingException();
         } catch (SQLException ex) {
-            log.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
             throw new SQLException();
         } finally {
@@ -109,7 +114,7 @@ public class EditBean {
                     rs.close();
                 rs = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
                 ex.printStackTrace();
             }
             
@@ -118,7 +123,7 @@ public class EditBean {
                     stmt.close();
                 stmt = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
                 ex.printStackTrace();
             }
             
@@ -127,68 +132,7 @@ public class EditBean {
                     connection.close();
                 connection = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Connectionクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-        }
-    }
-    
-    private void readKbnData() throws SQLException, NamingException {
-        
-        Connection connection = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        
-        try {
-            
-            // データベース接続
-            connection = DBController.open();
-            
-            // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM kbn_cd WHERE id = ?");
-            stmt.setInt(1, this.kintaiData.getKbnCd());
-            rs = stmt.executeQuery();
-
-            // 今まで登録されているデータを取得し設定
-            if (rs.next()) {
-                
-            }
-        
-        } catch (NamingException ex) {
-            log.log(Level.SEVERE, "Naming例外です", ex);
-            ex.printStackTrace();
-            throw new NamingException();
-        } catch (SQLException ex) {
-            log.log(Level.SEVERE, "SQL例外です", ex);
-            ex.printStackTrace();
-            throw new SQLException();
-        } finally {
-            
-            // クローズ
-            try {
-                if (rs != null)
-                    rs.close();
-                rs = null;
-            } catch (SQLException ex) {
-                log.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
-            try {
-                if (stmt != null)
-                    stmt.close();
-                stmt = null;
-            } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Statementクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-            
-            try {
-                if (connection != null)
-                    connection.close();
-                connection = null;
-            } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Connectionクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
                 ex.printStackTrace();
             }
         }
@@ -216,14 +160,15 @@ public class EditBean {
             stmt.setTime(8, this.kintaiData.getReal());
             stmt.setTime(9, this.kintaiData.getOver());
             stmt.setInt(10, this.kintaiData.getKbnCd());
+            
             stmt.executeQuery();
         
         } catch (NamingException ex) {
-            log.log(Level.SEVERE, "Naming例外です", ex);
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
             ex.printStackTrace();
             throw new NamingException();
         } catch (SQLException ex) {
-            log.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
             throw new SQLException();
         } finally {
@@ -235,7 +180,7 @@ public class EditBean {
                     stmt.close();
                 stmt = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
                 ex.printStackTrace();
             }
             
@@ -244,7 +189,7 @@ public class EditBean {
                     connection.close();
                 connection = null;
             } catch (SQLException ex) {
-                log.log(Level.SEVERE, "Connectionクローズ失敗", ex);
+                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
                 ex.printStackTrace();
             }
         }
@@ -274,6 +219,26 @@ public class EditBean {
 
     public void setKintaiData(KintaiData kintaiData) {
         this.kintaiData = kintaiData;
+    }
+
+    public boolean isDisabled() {
+        
+        int cd = kintaiData.getKbnCd();
+        
+        // 区分をチェックして入力が必要な項目かを返す
+        if (cd != 1 &&
+                cd != 5 &&
+                cd != 6) {
+            disabled = true;
+        } else {
+            disabled = false;
+        }
+        
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
     
 }

@@ -28,8 +28,9 @@ import util.Log;
 public class DBController {
     
     private static Connection connection = null;
+    private static final Logger LOG = Log.getLog();
     
-    private static Log log = new Log(DBController.class.getName(),"test.log");
+    //private static Log log = new Log(DBController.class.getName(),"test.log");
     
     
     /*
@@ -37,8 +38,8 @@ public class DBController {
     */
     public static Connection open() throws SQLException, NamingException {
         
-        //String jndi = "java:comp/env/jdbc/MySQLAWS";
-        String jndi = "java:comp/env/jdbc/MySQL";
+        String jndi = "java:comp/env/jdbc/MySQLAWS";
+        //String jndi = "java:comp/env/jdbc/MySQL";
         
         InitialContext context = null;
         
@@ -54,7 +55,7 @@ public class DBController {
         } catch (NamingException ex) {
             
             ex.printStackTrace();
-            log.log(Level.SEVERE, "Naming例外です", ex);
+            LOG.log(Level.SEVERE, "Naming例外です", ex);
             throw new NamingException();
             
         } catch (SQLException ex) {
@@ -65,12 +66,12 @@ public class DBController {
                 connection = null;
             } catch(SQLException ex2) {
                 ex2.printStackTrace();
-                log.log(Level.SEVERE, "SQL例外です", ex2);
+                LOG.log(Level.SEVERE, "SQL例外です", ex2);
                 throw new SQLException();
             }
             
             ex.printStackTrace();
-            log.log(Level.SEVERE, "SQL例外です", ex);
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             throw new SQLException();
         }
         
