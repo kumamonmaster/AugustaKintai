@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -100,6 +101,7 @@ public class EditBean {
             
             // 勤怠データの初期値をユーザーの勤務パターンに合わせる
             wtc.getTableUseEdit(connection, userData.getWorkptn_cd(), kintaiData);
+            
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
@@ -124,6 +126,7 @@ public class EditBean {
             // データベース接続
             connection = DBController.open();
             
+            // キーが一致する勤怠データを読込
             atc.getTableUseEdit(connection, this.kintaiKey.getYm(), this.kintaiKey.getUserId(), this.kintaiKey.getDay(), kintaiData);
             
         } catch (SQLException ex) {
@@ -158,6 +161,7 @@ public class EditBean {
             // データベース接続
             connection = DBController.open();
             
+            // 入力値を勤怠データに書込
             atc.setTableUseEdit(connection, this.kintaiData, this.userData);
             
         } catch (SQLException ex) {
@@ -181,6 +185,40 @@ public class EditBean {
     public String back() {
         return "kintai.xhtml";
     }
+    
+
+    public void setViewKbn(int kbnCd) {
+        kintaiData.setKbnCd(kbnCd);
+    }
+    
+    public void setViewStart(String start) {
+        kintaiData.setStart(Time.valueOf(start));
+    }
+    
+    public void setViewEnd(String end) {
+        kintaiData.setEnd(Time.valueOf(end));
+    }
+    
+    public void setViewRest(String rest) {
+        kintaiData.setRest(Time.valueOf(rest));
+    }
+    
+    public int getViewKbn() {
+        return kintaiData.getKbnCd();
+    }
+    
+    public String getViewStart() {
+        return kintaiData.getStart().toString();
+    }
+    
+    public String getViewEnd() {
+        return kintaiData.getEnd().toString();
+    }
+    
+    public String getViewRest() {
+        return kintaiData.getRest().toString();
+    }
+    
 
     public UserData getUserData() {
         return userData;

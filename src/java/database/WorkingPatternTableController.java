@@ -41,6 +41,8 @@ public class WorkingPatternTableController {
             if( rs.next() ) {
                 kintaiData.setStart(rs.getTime("start_time"));
                 kintaiData.setEnd(rs.getTime("end_time"));
+                kintaiData.setStart_default(rs.getTime("start_time"));
+                kintaiData.setEnd_default(rs.getTime("end_time"));
             }
         
         } catch (SQLException ex) {

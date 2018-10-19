@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/AugustaKintai">
 <!-- MySQL -->
-    <!--<Resource name="jdbc/MySQL" type="javax.sql.DataSource" username="TakafumiSato" password="1234567" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/augustaKintai?zeroDateTimeBehavior=convertToNull" />-->
+    <Resource name="jdbc/MySQL" type="javax.sql.DataSource" username="TakafumiSato" password="1234567" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/augustaKintai?zeroDateTimeBehavior=convertToNull" />
 <!-- MySQL AWS -->
     <Resource name="jdbc/MySQLAWS" type="javax.sql.DataSource" username="dbuser" password="password" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://testdb.cfchg067ulax.us-east-2.rds.amazonaws.com:3306/testdb" />
 </Context>

@@ -11,23 +11,23 @@
             <p>日付 <h:outputText value="#{kintaiKey.ym}"/> <h:outputText value="#{kintaiKey.day}"/></p>
             <p>
                 区分
-                <h:selectOneMenu value="#{editBean.kintaiData.kbnCd}" onchange="submit()">
+                <h:selectOneMenu value="#{editBean.viewKbn}" onchange="submit()">
                     <f:selectItems value="#{editInputTable.kbnTable}"/>
                 </h:selectOneMenu>
             </p>
         <!--</h:form>-->
         <!--<h:form>-->
             <p>出退勤時間
-                <h:selectOneMenu value="#{editBean.kintaiData.startToStringEdit}" disabled="#{editBean.disabled}" onchange="submit()">
+                <h:selectOneMenu value="#{editBean.viewStart}" disabled="#{editBean.disabled}" onchange="submit()">
                     <f:selectItems value="#{editInputTable.timeTable}"/>
                 </h:selectOneMenu>
                 ～
-                <h:selectOneMenu value="#{editBean.kintaiData.endToStringEdit}" disabled="#{editBean.disabled}" onchange="submit()">
+                <h:selectOneMenu value="#{editBean.viewEnd}" disabled="#{editBean.disabled}" onchange="submit()">
                     <f:selectItems value="#{editInputTable.timeTable}"/>
                 </h:selectOneMenu>
             </p>
             <p>休憩時間
-                <h:selectOneMenu value="#{editBean.kintaiData.restToString}" disabled="#{editBean.disabled}" onchange="submit()">
+                <h:selectOneMenu value="#{editBean.viewRest}" disabled="#{editBean.disabled}" onchange="submit()">
                     <f:selectItems value="#{editInputTable.restTable}"/>
                 </h:selectOneMenu>
             </p>

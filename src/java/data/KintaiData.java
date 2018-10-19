@@ -25,12 +25,17 @@ public class KintaiData {
     private int day = 0;
     private Time start = null;
     private Time end = null;
+    private Time start_default = null;
+    private Time end_default = null;
     private Time rest = null;
     private Time total = null;
     private Time over = null;
     private Time real = null;
     private int kbn_cd = 0;
     private String kbnName = null;
+    private int workPtn_cd = 0;
+    private Time late = null;
+    private Time leave = null;
     
     private boolean dbFlag = false;
 
@@ -41,17 +46,22 @@ public class KintaiData {
         this.day = day;
         this.start = null;
         this.end = null;
+        start_default = null;
+        end_default = null;
         this.total = null;
         this.rest = null;
         this.over = null;
         this.real = null;
         this.kbn_cd = 1;
         this.kbnName = "";
+        this.workPtn_cd = 1;
+        this.late = null;
+        this.leave = null;
         
         this.dbFlag = false;
     }
     
-    public void setData(Time start, Time end, Time rest, Time total, Time over, Time real, int kbn_cd, String kbnName) {
+    public void setData(Time start, Time end, Time rest, Time total, Time over, Time real, int kbn_cd, String kbnName, int workPtn_cd, Time late, Time leave) {
         this.start = start;
         this.end = end;
         this.total = total;
@@ -60,6 +70,9 @@ public class KintaiData {
         this.real = real;
         this.kbn_cd = kbn_cd;
         this.kbnName = kbnName;
+        this.workPtn_cd = workPtn_cd;
+        this.late = late;
+        this.leave = leave;
         
         this.dbFlag = true;
     }
@@ -75,11 +88,6 @@ public class KintaiData {
 
     public int getDay() {
         return day;
-    }
-    
-    public String getConversionDate() {
-        
-        return String.valueOf(ym) + " " + String.valueOf(day)+" "+Utility.conversionDayOfWeek(ym, day);
     }
 
     public void setDay(int day) {
@@ -101,10 +109,6 @@ public class KintaiData {
     public void setKbnName(String kbnName) {
         this.kbnName = kbnName;
     }
-
-    public String getStartToStringKintai() {
-        return (dbFlag) ? start.toString() : "";
-    }
     
     public String getStartToStringEdit() {
         return start.toString();
@@ -123,10 +127,6 @@ public class KintaiData {
 
     public void setStart(Time start) {
         this.start = start;
-    }
-
-    public String getEndToStringKintai() {
-        return (dbFlag) ? end.toString() : "";
     }
     
     public String getEndToStringEdit() {
@@ -148,19 +148,28 @@ public class KintaiData {
         this.end = end;
     }
 
+    public Time getStart_default() {
+        return start_default;
+    }
+
+    public void setStart_default(Time start_default) {
+        this.start_default = start_default;
+    }
+
+    public Time getEnd_default() {
+        return end_default;
+    }
+
+    public void setEnd_default(Time end_default) {
+        this.end_default = end_default;
+    }
+
     public Time getTotal() {
-        if (dbFlag)
-            return MathKintai.resultTotal(this.start, this.end, this.rest);
-        else
-            return total;
+        return total;
     }
 
     public void setTotal(Time total) {
         this.total = total;
-    }
-    
-    public String getRestToString() {
-        return (dbFlag) ? rest.toString() : "";
     }
     
     public void setRestToString(String rest) {
@@ -179,10 +188,7 @@ public class KintaiData {
     }
 
     public Time getOver() {
-        if (dbFlag)
-            return MathKintai.resultOver(this.start, this.end, this.rest);
-        else
-            return over;
+        return over;
     }
 
     public void setOver(Time over) {
@@ -190,13 +196,42 @@ public class KintaiData {
     }
 
     public Time getReal() {
-        if (dbFlag)
-            return MathKintai.resultReal(this.start, this.end, this.rest, this.kbn_cd);
-        else
-            return real;
+        return real;
     }
 
     public void setReal(Time real) {
         this.real = real;
+    }
+
+    public int getWorkPtn_cd() {
+        return workPtn_cd;
+    }
+
+    public void setWorkPtn_cd(int workPtn_cd) {
+        this.workPtn_cd = workPtn_cd;
+    }
+
+    public Time getLate() {
+        return late;
+    }
+
+    public void setLate(Time late) {
+        this.late = late;
+    }
+
+    public Time getLeave() {
+        return leave;
+    }
+
+    public void setLeave(Time leave) {
+        this.leave = leave;
+    }
+
+    public boolean isDbFlag() {
+        return dbFlag;
+    }
+
+    public void setDbFlag(boolean dbFlag) {
+        this.dbFlag = dbFlag;
     }
 }

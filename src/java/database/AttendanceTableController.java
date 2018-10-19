@@ -26,7 +26,7 @@ public class AttendanceTableController {
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
-    public void getTableUseKintai(Connection connection, int nowYearMonth, String user_id, ArrayList<KintaiData> dataList) throws SQLException {
+    public void getTableUseKintai(Connection connection, int nowYearMonth, UserData userData, ArrayList<KintaiData> dataList) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
@@ -35,7 +35,7 @@ public class AttendanceTableController {
             // attendanceテーブルからデータを取得
             stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
             stmt.setInt(1, nowYearMonth);
-            stmt.setString(2, user_id);
+            stmt.setString(2, userData.getId());
             rs = stmt.executeQuery();
 
             // 今まで登録されているデータを取得し設定
@@ -44,7 +44,8 @@ public class AttendanceTableController {
                 dataList.get(rs.getInt("day")-1).setData(
                                 rs.getTime("start_time"), rs.getTime("end_time"), 
                                 rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
-                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "" );
+                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "",
+                                rs.getInt("workPtn_cd"), rs.getTime("late_time"), rs.getTime("leave_time"));
                 
             }
         } catch (SQLException ex) {
@@ -95,7 +96,8 @@ public class AttendanceTableController {
                 data.setData(
                                 rs.getTime("start_time"), rs.getTime("end_time"), 
                                 rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
-                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "");
+                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "",
+                                rs.getInt("workPtn_cd"), rs.getTime("late_time"), rs.getTime("leave_time"));
             }
         
         } catch (SQLException ex) {
@@ -132,7 +134,7 @@ public class AttendanceTableController {
         try {
             
             // attendanceテーブルに入力データをセット
-            stmt = connection.prepareStatement("REPLACE INTO attendance (ym,user_id,day,start_time,end_time,rest_time,total_time,real_time,over_time,kbn_cd) VALUES(?,?,?,?,?,?,?,?,?,?)");
+            stmt = connection.prepareStatement("REPLACE INTO attendance (ym,user_id,day,start_time,end_time,rest_time,total_time,real_time,over_time,kbn_cd,workPtn_cd,late_time,leave_time) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
             stmt.setInt(1, kintaiData.getYm());
             stmt.setString(2, userData.getId());
             stmt.setInt(3, kintaiData.getDay());
@@ -143,6 +145,9 @@ public class AttendanceTableController {
             stmt.setTime(8, kintaiData.getReal());
             stmt.setTime(9, kintaiData.getOver());
             stmt.setInt(10, kintaiData.getKbnCd());
+            stmt.setInt(11, userData.getWorkptn_cd());
+            stmt.setTime(12, kintaiData.getLate());
+            stmt.setTime(13, kintaiData.getLeave());
             
             stmt.executeQuery();
         

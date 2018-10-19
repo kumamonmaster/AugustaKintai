@@ -11,10 +11,12 @@ import data.UserData;
 import database.AttendanceTableController;
 import database.DBController;
 import database.KbnTableController;
+import database.WorkingPatternTableController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -28,6 +30,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.naming.NamingException;
 import util.Log;
+import util.MathKintai;
 import util.Utility;
 
 /**
@@ -46,8 +49,9 @@ public class KintaiBean {
     @ManagedProperty(value="#{kintaiKey}")
     private KintaiKey kintaiKey;
     
-    private AttendanceTableController atc = null;
-    private KbnTableController ktc = null;
+    private AttendanceTableController attendanceTC = null;
+    private KbnTableController kbnTC = null;
+    private WorkingPatternTableController workingPatternTC = null;
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
@@ -68,8 +72,9 @@ public class KintaiBean {
     @PostConstruct
     public void init() {
         
-        atc = new AttendanceTableController();
-        ktc = new KbnTableController();
+        attendanceTC = new AttendanceTableController();
+        kbnTC = new KbnTableController();
+        workingPatternTC = new WorkingPatternTableController();
         
         try {
             // rowData初期化
@@ -125,6 +130,51 @@ public class KintaiBean {
         }
     }
     
+    /*
+    setKintaiData
+    データベースに存在する勤怠データを設定
+    */
+    private void readKintaiData() throws SQLException, NamingException {
+        
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rsAttendance = null;
+        ResultSet rsKbn = null;
+        
+        try {
+            // データベース接続
+            connection = DBController.open();
+            
+            // 勤務パターンを読込
+            for (KintaiData kintaiData :kintaiDataList) {
+                workingPatternTC.getTableUseEdit(connection, userData.getWorkptn_cd(), kintaiData);
+            }
+        
+            // 勤怠実績を読込
+            attendanceTC.getTableUseKintai(connection, Integer.parseInt(nowYearMonth), this.userData, kintaiDataList);
+            
+            // 勤務区分を読込
+            for (KintaiData kintaiData :kintaiDataList) {
+                kbnTC.getTableUseKintai(connection, kintaiData.getKbnCd(), kintaiData);
+            }
+            
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            throw new SQLException();
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                connection = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    
+    
     private ArrayList<String> setYearMonth() {
         
         int range = 12;
@@ -153,43 +203,6 @@ public class KintaiBean {
         return nowYearMonth;
     }
     
-    /*
-    setKintaiData
-    データベースに存在する勤怠データを設定
-    */
-    private void readKintaiData() throws SQLException, NamingException {
-        
-        Connection connection = null;
-        PreparedStatement stmt = null;
-        ResultSet rsAttendance = null;
-        ResultSet rsKbn = null;
-        
-        try {
-            // データベース接続
-            connection = DBController.open();
-        
-            atc.getTableUseKintai(connection, Integer.parseInt(nowYearMonth), this.userData.getId(), kintaiDataList);
-            
-            for (KintaiData kintaiData :kintaiDataList) {
-                ktc.getTableUseKintai(connection, kintaiData.getKbnCd(), kintaiData);
-            }
-            
-        } catch (SQLException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            throw new SQLException();
-        } finally {
-            try {
-                if (connection != null)
-                    connection.close();
-                connection = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-        }
-    }
-    
-    
     public ArrayList<KintaiData> getKintaiDataList() {
         return kintaiDataList;
     }
@@ -202,8 +215,6 @@ public class KintaiBean {
     public void setKintaiKey(KintaiKey kintaiKey) {
         this.kintaiKey = kintaiKey;
     }
-    
-    
     
     public void setYearMonth(String s) {
         // ここは修正する
@@ -227,7 +238,99 @@ public class KintaiBean {
         this.nowYearMonth = nowYearMonth;
     }
     
-    public String edit(int ym, String user_id, int day) {
+    public String viewDate(int ym, int day) {
+        
+        return String.valueOf(ym) + " " + String.valueOf(day)+" "+Utility.conversionDayOfWeek(ym, day);
+    }
+    
+    public String viewKbn(KintaiData kintaiData) {
+        
+        return kintaiData.getKbnName();
+    }
+    
+    public String viewStart(KintaiData kintaiData) {
+        
+        return (kintaiData.isDbFlag()) ? kintaiData.getStart().toString() : "";
+    }
+    
+    public String viewEnd(KintaiData kintaiData) {
+        
+        return (kintaiData.isDbFlag()) ? kintaiData.getEnd().toString() : "";
+    }
+    
+    public String viewTotal(KintaiData kintaiData) {
+
+        if (kintaiData.getStart() != null &&
+                kintaiData.getEnd() != null &&
+                kintaiData.getRest() != null) {
+            kintaiData.setTotal(MathKintai.resultTotal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
+        }
+        
+        if (kintaiData.getTotal() != null)
+            return kintaiData.getTotal().toString();
+        else
+            return "";
+    }
+    
+    public String viewRest(KintaiData kintaiData) {
+        
+        return (kintaiData.isDbFlag()) ? kintaiData.getRest().toString() : "";
+    }
+    
+    public String viewOver(KintaiData kintaiData) {
+        
+        if (kintaiData.getStart() != null &&
+                kintaiData.getEnd() != null &&
+                kintaiData.getRest() != null) {
+            kintaiData.setOver(MathKintai.resultOver(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
+        }
+        
+        if (kintaiData.getOver() != null)
+            return kintaiData.getOver().toString();
+        else
+            return "";
+    }
+    
+    public String viewReal(KintaiData kintaiData) {
+        
+        if (kintaiData.getStart() != null &&
+                kintaiData.getEnd() != null &&
+                kintaiData.getRest() != null) {
+            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest(), kintaiData.getKbnCd()));
+        }
+        
+        if (kintaiData.getReal() != null)
+            return kintaiData.getReal().toString();
+        else
+            return "";
+    }
+    
+    public String viewLate(KintaiData kintaiData) {
+        
+        if (kintaiData.getStart() != null &&
+                kintaiData.getStart_default()!= null)
+            kintaiData.setLate(MathKintai.resultLate(kintaiData.getStart(), kintaiData.getStart_default()));
+        
+        if (kintaiData.getLate() != null)
+            return kintaiData.getLate().toString();
+        else
+            return "";
+    }
+    
+    public String viewLeave(KintaiData kintaiData) {
+        
+        if (kintaiData.getEnd() != null &&
+                kintaiData.getEnd_default()!= null)
+            kintaiData.setLeave(MathKintai.resultLeave(kintaiData.getEnd(), kintaiData.getEnd_default()));
+        
+        
+        if (kintaiData.getLeave() != null)
+            return kintaiData.getLeave().toString();
+        else
+            return "";
+    }
+    
+    public String transitionEditPage(int ym, String user_id, int day) {
         
         // データベースへアクセスするためのキーを登録
         this.kintaiKey.setKey(ym, user_id, day);

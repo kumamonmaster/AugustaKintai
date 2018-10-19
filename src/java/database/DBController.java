@@ -52,6 +52,8 @@ public class DBController {
                 // データソースでコネクション取得
                 connection = dataSource.getConnection();
                 
+                //DriverManager;
+                
         } catch (NamingException ex) {
             
             ex.printStackTrace();
