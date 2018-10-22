@@ -39,8 +39,8 @@ public class WorkingPatternTableController {
 
             // パスワード一致していたらページ遷移
             if( rs.next() ) {
-                kintaiData.setStart(rs.getTime("start_time"));
-                kintaiData.setEnd(rs.getTime("end_time"));
+//                kintaiData.setStart(rs.getTime("start_time"));
+//                kintaiData.setEnd(rs.getTime("end_time"));
                 kintaiData.setStart_default(rs.getTime("start_time"));
                 kintaiData.setEnd_default(rs.getTime("end_time"));
             }

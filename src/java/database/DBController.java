@@ -45,21 +45,20 @@ public class DBController {
         
         try {
             
-                context = new InitialContext();
-                // lookupでデータソースオブジェクトを取得
-                DataSource dataSource = (DataSource) context.lookup(jndi);
-
-                // データソースでコネクション取得
-                connection = dataSource.getConnection();
+                //                context = new InitialContext();
+//                // lookupでデータソースオブジェクトを取得
+//                DataSource dataSource = (DataSource) context.lookup(jndi);
+//
+//                // データソースでコネクション取得
+//                connection = dataSource.getConnection();
+                try{
+                    Class.forName("com.mysql.jdbc.Driver");
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(DBController.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 
-                //DriverManager;
+                connection = DriverManager.getConnection("jdbc:mysql://testdb.cfchg067ulax.us-east-2.rds.amazonaws.com:3306/testdb?useUnicode=true&characterEncoding=utf8", "dbuser", "password");
                 
-        } catch (NamingException ex) {
-            
-            ex.printStackTrace();
-            LOG.log(Level.SEVERE, "Naming例外です", ex);
-            throw new NamingException();
-            
         } catch (SQLException ex) {
             
             try {

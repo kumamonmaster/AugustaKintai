@@ -7,6 +7,7 @@ package beans;
 
 import data.KintaiData;
 import data.KintaiKey;
+import data.KintaiYearMonth;
 import data.UserData;
 import database.AttendanceTableController;
 import database.DBController;
@@ -48,6 +49,8 @@ public class KintaiBean {
     private UserData userData;
     @ManagedProperty(value="#{kintaiKey}")
     private KintaiKey kintaiKey;
+    @ManagedProperty(value="#{kintaiYearMonth}")
+    private KintaiYearMonth kintaiYearMonth;
     
     private AttendanceTableController attendanceTC = null;
     private KbnTableController kbnTC = null;
@@ -105,7 +108,7 @@ public class KintaiBean {
         // 月度の最終日を取得
         int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
         // 今月度を設定
-        yearMonthList = setYearMonth();
+        yearMonthList = setYearMonthList();
         
         // kintaiDataListの日付部分を設定
         for (int i = 1; i <= lastDay; i++) {
@@ -175,7 +178,7 @@ public class KintaiBean {
     
     
     
-    private ArrayList<String> setYearMonth() {
+    private ArrayList<String> setYearMonthList() {
         
         int range = 12;
         ArrayList<String> list = new ArrayList<String>();
@@ -216,9 +219,15 @@ public class KintaiBean {
         this.kintaiKey = kintaiKey;
     }
     
+    public void setKintaiYearMonth(KintaiYearMonth kintaiYearMonth) {
+        this.kintaiYearMonth = kintaiYearMonth;
+    }
+    
     public void setYearMonth(String s) {
         // ここは修正する
         //yearMonthList.get(0);
+        int ym = Utility.unionInt(Integer.parseInt(s.toString().substring(0, 4)), Integer.parseInt(s.toString().substring(5, 7)));
+        kintaiYearMonth.setYm(ym);
     }
     
     public String getYearMonth() {
@@ -250,21 +259,29 @@ public class KintaiBean {
     
     public String viewStart(KintaiData kintaiData) {
         
-        return (kintaiData.isDbFlag()) ? kintaiData.getStart().toString() : "";
+        //return (kintaiData.isDbFlag()) ? kintaiData.getStart().toString() : "";
+        if (kintaiData.getStart() != null)
+            return kintaiData.getStart().toString();
+        else
+            return "";
     }
     
     public String viewEnd(KintaiData kintaiData) {
         
-        return (kintaiData.isDbFlag()) ? kintaiData.getEnd().toString() : "";
+        //return (kintaiData.isDbFlag()) ? kintaiData.getEnd().toString() : "";
+        if (kintaiData.getEnd() != null)
+            return kintaiData.getEnd().toString();
+        else
+            return "";
     }
     
     public String viewTotal(KintaiData kintaiData) {
 
-        if (kintaiData.getStart() != null &&
-                kintaiData.getEnd() != null &&
-                kintaiData.getRest() != null) {
-            kintaiData.setTotal(MathKintai.resultTotal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
-        }
+//        if (kintaiData.getStart() != null &&
+//                kintaiData.getEnd() != null &&
+//                kintaiData.getRest() != null) {
+//            kintaiData.setTotal(MathKintai.resultTotal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
+//        }
         
         if (kintaiData.getTotal() != null)
             return kintaiData.getTotal().toString();
@@ -274,16 +291,20 @@ public class KintaiBean {
     
     public String viewRest(KintaiData kintaiData) {
         
-        return (kintaiData.isDbFlag()) ? kintaiData.getRest().toString() : "";
+        //return (kintaiData.isDbFlag()) ? kintaiData.getRest().toString() : "";
+        if (kintaiData.getRest() != null)
+            return kintaiData.getRest().toString();
+        else
+            return "";
     }
     
     public String viewOver(KintaiData kintaiData) {
         
-        if (kintaiData.getStart() != null &&
-                kintaiData.getEnd() != null &&
-                kintaiData.getRest() != null) {
-            kintaiData.setOver(MathKintai.resultOver(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
-        }
+//        if (kintaiData.getStart() != null &&
+//                kintaiData.getEnd() != null &&
+//                kintaiData.getRest() != null) {
+//            kintaiData.setOver(MathKintai.resultOver(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
+//        }
         
         if (kintaiData.getOver() != null)
             return kintaiData.getOver().toString();
@@ -293,11 +314,11 @@ public class KintaiBean {
     
     public String viewReal(KintaiData kintaiData) {
         
-        if (kintaiData.getStart() != null &&
-                kintaiData.getEnd() != null &&
-                kintaiData.getRest() != null) {
-            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest(), kintaiData.getKbnCd()));
-        }
+//        if (kintaiData.getStart() != null &&
+//                kintaiData.getEnd() != null &&
+//                kintaiData.getRest() != null) {
+//            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest(), kintaiData.getKbnCd()));
+//        }
         
         if (kintaiData.getReal() != null)
             return kintaiData.getReal().toString();
@@ -307,9 +328,9 @@ public class KintaiBean {
     
     public String viewLate(KintaiData kintaiData) {
         
-        if (kintaiData.getStart() != null &&
-                kintaiData.getStart_default()!= null)
-            kintaiData.setLate(MathKintai.resultLate(kintaiData.getStart(), kintaiData.getStart_default()));
+//        if (kintaiData.getStart() != null &&
+//                kintaiData.getStart_default()!= null)
+//            kintaiData.setLate(MathKintai.resultLate(kintaiData.getStart(), kintaiData.getStart_default()));
         
         if (kintaiData.getLate() != null)
             return kintaiData.getLate().toString();
@@ -319,15 +340,20 @@ public class KintaiBean {
     
     public String viewLeave(KintaiData kintaiData) {
         
-        if (kintaiData.getEnd() != null &&
-                kintaiData.getEnd_default()!= null)
-            kintaiData.setLeave(MathKintai.resultLeave(kintaiData.getEnd(), kintaiData.getEnd_default()));
+//        if (kintaiData.getEnd() != null &&
+//                kintaiData.getEnd_default()!= null)
+//            kintaiData.setLeave(MathKintai.resultLeave(kintaiData.getEnd(), kintaiData.getEnd_default()));
         
         
         if (kintaiData.getLeave() != null)
             return kintaiData.getLeave().toString();
         else
             return "";
+    }
+    
+    public String viewRemarks(KintaiData kintaiData) {
+        
+        return kintaiData.getRemarks();
     }
     
     public String transitionEditPage(int ym, String user_id, int day) {

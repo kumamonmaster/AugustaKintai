@@ -11,7 +11,7 @@
     <h:body>
         <h:form>
         <h1>
-            <h:selectOneMenu value="#{kintaiBean.yearMonth}">
+            <h:selectOneMenu value="#{kintaiBean.yearMonth}" onchange="submit()">
                 <f:selectItems value="#{kintaiBean.yearMonthList}"/>
             </h:selectOneMenu>
             <h:outputText value="#{kintaiBean.yearMonth}"/>
@@ -78,6 +78,12 @@
                     <h:outputText value="早退時間"/>
                     </f:facet>
                     <h:outputText value="#{kintaiBean.viewLeave(item)}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    <h:outputText value="備考"/>
+                    </f:facet>
+                    <h:outputText value="#{kintaiBean.viewRemarks(item)}"/>
                 </h:column>
             </h:dataTable>
         </h:form>

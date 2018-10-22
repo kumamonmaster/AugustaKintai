@@ -31,7 +31,7 @@
                     <f:selectItems value="#{editInputTable.restTable}"/>
                 </h:selectOneMenu>
             </p>
-            <p>備考<h:inputTextarea/></p>
+        <p>備考<h:inputText value="#{editBean.viewRemarks}" onchange="submit()"/></p>
             <h:commandButton value="戻る" action="#{editBean.back()}"/>
             <h:commandButton value="登録" action="#{editBean.entry()}"/>
         </h:form>
@@ -40,14 +40,13 @@
         日<h:outputText value="#{editBean.kintaiData.day}"/>
         出勤<h:outputText value="#{editBean.kintaiData.start}"/>
         退勤<h:outputText value="#{editBean.kintaiData.end}"/>
-        出勤<h:outputText value="#{editBean.kintaiData.startToStringEdit}"/>
-        退勤<h:outputText value="#{editBean.kintaiData.endToStringEdit}"/>
         休憩<h:outputText value="#{editBean.kintaiData.rest}"/>
         残業<h:outputText value="#{editBean.kintaiData.over}"/>
         総<h:outputText value="#{editBean.kintaiData.total}"/>
         実<h:outputText value="#{editBean.kintaiData.real}"/>
         区分<h:outputText value="#{editBean.kintaiData.kbnCd}"/>
         勤務パターン<h:outputText value="#{userData.workptn_cd}"/>
+        備考<h:outputText value="#{editBean.kintaiData.remarks}"/>
     </h:body>
 </html>
 

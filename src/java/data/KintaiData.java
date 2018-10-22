@@ -36,6 +36,7 @@ public class KintaiData {
     private int workPtn_cd = 0;
     private Time late = null;
     private Time leave = null;
+    private String remarks = null;
     
     private boolean dbFlag = false;
 
@@ -57,11 +58,12 @@ public class KintaiData {
         this.workPtn_cd = 1;
         this.late = null;
         this.leave = null;
+        this.remarks = null;
         
         this.dbFlag = false;
     }
     
-    public void setData(Time start, Time end, Time rest, Time total, Time over, Time real, int kbn_cd, String kbnName, int workPtn_cd, Time late, Time leave) {
+    public void setData(Time start, Time end, Time rest, Time total, Time over, Time real, int kbn_cd, String kbnName, int workPtn_cd, Time late, Time leave, String remarks) {
         this.start = start;
         this.end = end;
         this.total = total;
@@ -73,6 +75,7 @@ public class KintaiData {
         this.workPtn_cd = workPtn_cd;
         this.late = late;
         this.leave = leave;
+        this.remarks = remarks;
         
         this.dbFlag = true;
     }
@@ -110,34 +113,12 @@ public class KintaiData {
         this.kbnName = kbnName;
     }
     
-    public String getStartToStringEdit() {
-        return start.toString();
-    }
-    
-    public void setStartToStringEdit(String start) {
-        if (start != "")
-            this.start = Time.valueOf(start);
-        else
-            this.start = Time.valueOf("00:00:00");
-    }
-    
     public Time getStart() {
         return start;
     }
 
     public void setStart(Time start) {
         this.start = start;
-    }
-    
-    public String getEndToStringEdit() {
-        return end.toString();
-    }
-    
-    public void setEndToStringEdit(String end) {
-        if (end != "")
-            this.end = Time.valueOf(end);
-        else
-            this.end = Time.valueOf("00:00:00");
     }
     
     public Time getEnd() {
@@ -170,13 +151,6 @@ public class KintaiData {
 
     public void setTotal(Time total) {
         this.total = total;
-    }
-    
-    public void setRestToString(String rest) {
-        if (rest != "")
-            this.rest = Time.valueOf(rest);
-        else
-            this.rest = Time.valueOf("00:00:00");
     }
 
     public Time getRest() {
@@ -225,6 +199,14 @@ public class KintaiData {
 
     public void setLeave(Time leave) {
         this.leave = leave;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     public boolean isDbFlag() {

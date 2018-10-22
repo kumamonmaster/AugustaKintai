@@ -30,6 +30,7 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.naming.NamingException;
 import util.Log;
+import util.MathKintai;
 import util.Utility;
 
 
@@ -151,17 +152,19 @@ public class EditBean {
         
         // disableフラグがtrueか
         // trueの場合、出退勤時間、休憩時間の設定は無効
-        if (this.disabled) {
-            this.kintaiData.setStartToStringEdit("00:00:00");
-            this.kintaiData.setEndToStringEdit("00:00:00");
-            this.kintaiData.setRestToString("00:00:00");
-        }
+//        if (this.disabled) {
+//            this.kintaiData.setStartToStringEdit("00:00:00");
+//            this.kintaiData.setEndToStringEdit("00:00:00");
+//            this.kintaiData.setRestToString("00:00:00");
+//        }
         
         try {
             // データベース接続
             connection = DBController.open();
             
             // 入力値を勤怠データに書込
+            kintaiDataCalculation();
+            kintaiDataDisabled();
             atc.setTableUseEdit(connection, this.kintaiData, this.userData);
             
         } catch (SQLException ex) {
@@ -180,6 +183,53 @@ public class EditBean {
         }
         
         return "kintai.xhtml";
+    }
+    
+    private void kintaiDataCalculation() {
+        
+        if (kintaiData.getKbnCd() == 2 ||
+                kintaiData.getKbnCd() == 3 ||
+                kintaiData.getKbnCd() == 7 ||
+                kintaiData.getKbnCd() == 8)
+            return;
+        
+        if (kintaiData.getStart() != null &&
+                kintaiData.getEnd() != null &&
+                kintaiData.getRest() != null) {
+            
+            kintaiData.setTotal(MathKintai.resultTotal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
+            kintaiData.setOver(MathKintai.resultOver(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
+            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest(), kintaiData.getKbnCd()));
+        }
+        
+        if (kintaiData.getStart() != null &&
+                kintaiData.getStart_default()!= null)
+        {
+            kintaiData.setLate(MathKintai.resultLate(kintaiData.getStart(), kintaiData.getStart_default()));
+        }
+        
+        if (kintaiData.getEnd() != null &&
+                kintaiData.getEnd_default()!= null)
+        {
+            kintaiData.setLeave(MathKintai.resultLeave(kintaiData.getEnd(), kintaiData.getEnd_default()));
+        }
+    }
+    
+    private void kintaiDataDisabled() {
+        
+        if (disabled) {
+            kintaiData.setStart(new Time(Time.valueOf("00:00:00").getTime()));
+            kintaiData.setEnd(new Time(Time.valueOf("00:00:00").getTime()));
+            kintaiData.setRest(new Time(Time.valueOf("00:00:00").getTime()));
+            kintaiData.setOver(new Time(Time.valueOf("00:00:00").getTime()));
+            kintaiData.setLate(new Time(Time.valueOf("00:00:00").getTime()));
+            kintaiData.setLeave(new Time(Time.valueOf("00:00:00").getTime()));
+            
+            if (kintaiData.getKbnCd() != 4){
+                kintaiData.setTotal(new Time(Time.valueOf("00:00:00").getTime()));
+                kintaiData.setReal(new Time(Time.valueOf("00:00:00").getTime()));
+            }
+        }
     }
     
     public String back() {
@@ -203,20 +253,44 @@ public class EditBean {
         kintaiData.setRest(Time.valueOf(rest));
     }
     
+    public void setViewRemarks(String remarks) {
+        kintaiData.setRemarks(remarks);
+    }
+    
     public int getViewKbn() {
         return kintaiData.getKbnCd();
     }
     
     public String getViewStart() {
-        return kintaiData.getStart().toString();
+        
+        if (kintaiData.getStart() != null)
+            return kintaiData.getStart().toString();
+        else
+            return kintaiData.getStart_default().toString();
     }
     
     public String getViewEnd() {
-        return kintaiData.getEnd().toString();
+        
+        if (kintaiData.getStart() != null)
+            return kintaiData.getEnd().toString();
+        else
+            return kintaiData.getEnd_default().toString();
     }
     
     public String getViewRest() {
-        return kintaiData.getRest().toString();
+        
+        if (kintaiData.getRest() != null)
+            return kintaiData.getRest().toString();
+        else
+            return new Time(Time.valueOf("01:00:00").getTime()).toString();
+    }
+    
+    public String getViewRemarks() {
+        
+        if (kintaiData.getRemarks() != null)
+            return kintaiData.getRemarks();
+        else
+            return "";
     }
     
 
