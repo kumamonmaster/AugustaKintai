@@ -26,7 +26,7 @@ public class AttendanceTableController {
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
-    public void getTableUseKintai(Connection connection, int nowYearMonth, UserData userData, ArrayList<KintaiData> dataList) throws SQLException {
+    public void getTableUseKintai(Connection connection, int yearMonth, UserData userData, ArrayList<KintaiData> dataList) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
@@ -34,7 +34,7 @@ public class AttendanceTableController {
             
             // attendanceテーブルからデータを取得
             stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
-            stmt.setInt(1, nowYearMonth);
+            stmt.setInt(1, yearMonth);
             stmt.setString(2, userData.getId());
             rs = stmt.executeQuery();
 

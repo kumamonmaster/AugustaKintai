@@ -17,14 +17,23 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class KintaiYearMonth implements Serializable {
     
-    private int ym;
+    private int year = 0;
+    private int month = 0;
 
-    public int getYm() {
-        return ym;
+    public int getYear() {
+        return year;
     }
 
-    public void setYm(int ym) {
-        this.ym = ym;
+    public void setYear(int year) {
+        this.year = year;
+    }
+    
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
     }
     
 }

@@ -11,11 +11,10 @@
     <h:body>
         <h:form>
         <h1>
-            <h:selectOneMenu value="#{kintaiBean.yearMonth}" onchange="submit()">
+            <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()">
                 <f:selectItems value="#{kintaiBean.yearMonthList}"/>
             </h:selectOneMenu>
             <h:outputText value="#{kintaiBean.yearMonth}"/>
-            <h:outputText value="#{kintaiBean.nowYearMonth}"/>
         </h1>
             <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
                 <h:column>
@@ -92,7 +91,6 @@
 <p>#{userData.name}</p>
 <p>#{userData.mail}</p>
 <p>#{userData.password}</p>
-<p>#{kintaiBean.nowYearMonth}</p>
 <p>#{kintaiBean.kintaiDataList.get(0)}</p>
 <p>#{kintaiBean.kintaiDataList.get(1)}</p>
     </h:body>

@@ -29,6 +29,8 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 import javax.naming.NamingException;
 import util.Log;
 import util.MathKintai;
@@ -61,11 +63,10 @@ public class KintaiBean {
     
     private ArrayList<KintaiData> kintaiDataList = null;
     // 選択月度リスト
-    private ArrayList<String> yearMonthList = null;
-    // 今月度
-    private String nowYearMonth = null;
+    private ArrayList<SelectItem> yearMonthList = null;
     
     
+
     /*
     KintaiBeanコンストラクタ
     @PostConstructでコンストラクタ呼ばないと@ManagedPropertyがnullのままでエラーとなる
@@ -104,17 +105,23 @@ public class KintaiBean {
         // カレンダー生成
         Calendar c = new GregorianCalendar();
         // 1日を設定
-        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1);
+        if (kintaiYearMonth.getYear() == 0)
+            c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1);
+        else
+            c.set(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()-1, 1);
+        
+        kintaiYearMonth.setYear(c.get(Calendar.YEAR));
+        kintaiYearMonth.setMonth(c.get(Calendar.MONTH)+1);
         // 月度の最終日を取得
         int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
         // 今月度を設定
-        yearMonthList = setYearMonthList();
+        yearMonthList = setYearMonthList(kintaiYearMonth);
         
         // kintaiDataListの日付部分を設定
         for (int i = 1; i <= lastDay; i++) {
             
             // Stringで日付と曜日を設定
-            kintaiDataList.add(new KintaiData(Utility.unionInt(c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1), c.get(Calendar.DAY_OF_MONTH)));
+            kintaiDataList.add(new KintaiData(Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), c.get(Calendar.DAY_OF_MONTH)));
             // 日付を1日ずらす
             c.add(Calendar.DAY_OF_MONTH, +1);
         }
@@ -154,7 +161,7 @@ public class KintaiBean {
             }
         
             // 勤怠実績を読込
-            attendanceTC.getTableUseKintai(connection, Integer.parseInt(nowYearMonth), this.userData, kintaiDataList);
+            attendanceTC.getTableUseKintai(connection, Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), this.userData, kintaiDataList);
             
             // 勤務区分を読込
             for (KintaiData kintaiData :kintaiDataList) {
@@ -178,32 +185,21 @@ public class KintaiBean {
     
     
     
-    private ArrayList<String> setYearMonthList() {
+    private ArrayList<SelectItem> setYearMonthList(KintaiYearMonth kintaiYearMonth) {
         
         int range = 12;
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<SelectItem> list = new ArrayList<SelectItem>();
         Calendar c = new GregorianCalendar();
+        c.set(Calendar.YEAR, kintaiYearMonth.getYear());
+        c.set(Calendar.MONTH, kintaiYearMonth.getMonth()-1);
         c.add(Calendar.MONTH, -range/2);
-        
+
         for (int i = 0; i < range; i++) {
-            list.add(String.valueOf(c.get(Calendar.YEAR))+"年"+String.valueOf(c.get(Calendar.MONTH)+1+i)+"月");
-            setNowYearMonth(c.get(Calendar.MONTH)+1+i);
+            list.add(new SelectItem(Utility.unionInt(c.get(Calendar.YEAR),c.get(Calendar.MONTH)+1), c.get(Calendar.YEAR)+"年"+(c.get(Calendar.MONTH)+1)+"月"));
+            c.add(Calendar.MONTH, +1);
         }
         
         return list;
-    }
-    
-    private void setNowYearMonth(int month) {
-        
-        Calendar c = new GregorianCalendar();
-        
-        if (c.get(Calendar.MONTH)+1 == month) {
-            nowYearMonth = String.valueOf(c.get(Calendar.YEAR)) + String.valueOf(c.get(Calendar.MONTH)+1);
-        }
-    }
-    
-    public String getNowYearMonth() {
-        return nowYearMonth;
     }
     
     public ArrayList<KintaiData> getKintaiDataList() {
@@ -223,28 +219,46 @@ public class KintaiBean {
         this.kintaiYearMonth = kintaiYearMonth;
     }
     
-    public void setYearMonth(String s) {
-        // ここは修正する
-        //yearMonthList.get(0);
-        int ym = Utility.unionInt(Integer.parseInt(s.toString().substring(0, 4)), Integer.parseInt(s.toString().substring(5, 7)));
-        kintaiYearMonth.setYm(ym);
+    public void setYearMonth(int ym) {
+        
+//        kintaiYearMonth.setYear(ym/100);
+//        if (String.valueOf(ym).length() > 5)
+//            kintaiYearMonth.setMonth(ym%100);
+//        else
+//            kintaiYearMonth.setMonth(ym%10);
     }
     
-    public String getYearMonth() {
-        // ここは修正する
-        return yearMonthList.get(6);
+    public void setYearMonthChanged(ValueChangeEvent e) {
+        
+        if (e.getOldValue() != e.getNewValue()) {
+            
+            int ym = (int)e.getNewValue();
+
+            if (String.valueOf(ym).length() > 5) {
+                
+                kintaiYearMonth.setYear(ym/100);
+                kintaiYearMonth.setMonth(ym%100);
+            }
+            else {
+                kintaiYearMonth.setYear(ym/10);
+                kintaiYearMonth.setMonth(ym%10);
+            }
+            
+            init();
+        }
     }
     
-    public ArrayList<String> getYearMonthList() {
+    public int getYearMonth() {
+        // ここは修正する
+        return Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
+    }
+    
+    public ArrayList<SelectItem> getYearMonthList() {
         return yearMonthList;
     }
     
-    public void setYearMonthList(ArrayList<String> yearMonthList) {
+    public void setYearMonthList(ArrayList<SelectItem> yearMonthList) {
         this.yearMonthList = yearMonthList;
-    }
-
-    public void setNowYearMonth(String nowYearMonth) {
-        this.nowYearMonth = nowYearMonth;
     }
     
     public String viewDate(int ym, int day) {
