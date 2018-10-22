@@ -14,7 +14,7 @@
             <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()">
                 <f:selectItems value="#{kintaiBean.yearMonthList}"/>
             </h:selectOneMenu>
-            <h:outputText value="#{kintaiBean.yearMonth}"/>
+            <h:outputText value="#{kintaiBean.viewYearMonth()}"/>
         </h1>
             <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
                 <h:column>

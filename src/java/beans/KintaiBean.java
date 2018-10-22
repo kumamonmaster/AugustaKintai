@@ -261,9 +261,17 @@ public class KintaiBean {
         this.yearMonthList = yearMonthList;
     }
     
+    
+    public String viewYearMonth() {
+        
+        return String.valueOf(kintaiYearMonth.getYear()) + "年 " + String.valueOf(kintaiYearMonth.getMonth() + "月");
+    }
+    
     public String viewDate(int ym, int day) {
         
-        return String.valueOf(ym) + " " + String.valueOf(day)+" "+Utility.conversionDayOfWeek(ym, day);
+        StringBuilder sb = new StringBuilder(String.valueOf(ym));
+        sb.insert(4, "年");
+        return sb.toString() + "月 " + String.valueOf(day)+"日 "+Utility.conversionDayOfWeek(ym, day);
     }
     
     public String viewKbn(KintaiData kintaiData) {
