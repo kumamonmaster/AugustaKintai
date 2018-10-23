@@ -9,8 +9,11 @@
         <title>勤怠管理</title>
     </h:head>
     <h:body>
+        <nav class="navbar navbar-light bg-light">
+            <span class="navbar-brand mb-0 h1">オーガスタ勤怠システム</span>
+        </nav>
         <div class="container">
-            <h:form>
+            <h:form style="padding-top: 80px;">
                 <div class="form-group">
                     <label for="inputEmail">メールアドレス</label>
                     <h:inputText value="#{userData.mail}" id="inputEmail" styleClass="form-control" p:placeholder="example@augusta-inc.co.jp" p:autofocus="true"/>
