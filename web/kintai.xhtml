@@ -9,24 +9,28 @@
         <title>勤怠管理システム</title>
     </h:head>
     <h:body>
-        <div class="container">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>社員番号</th>
-                        <th>氏名</th>
-                        <th>メールアドレス</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#{userData.id}</td>
-                        <td>#{userData.name}</td>
-                        <td>#{userData.mail}</td>
-                    </tr>
-                </tbody>
-            </table>
-        
+        <nav class="navbar navbar-light bg-light">
+            <span class="navbar-brand mb-0 h1">オーガスタ勤怠システム</span>
+        </nav>
+        <div class="container" style="padding-top: 30px">
+            <div class="row">
+                <table class="table table-bordered col-md-7">
+                    <thead>
+                        <tr>
+                            <th>社員番号</th>
+                            <th>氏名</th>
+                            <th>メールアドレス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#{userData.id}</td>
+                            <td>#{userData.name}</td>
+                            <td>#{userData.mail}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <h:form>
             <h1>
                 <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()">
