@@ -32,11 +32,9 @@
                 </table>
             </div>
             <h:form>
-            <h1>
-                <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()">
+                <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()" styleClass="form-control col-sm-2">
                     <f:selectItems value="#{kintaiBean.yearMonthList}"/>
                 </h:selectOneMenu>
-            </h1>
                 <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
                     <h:column>
                         <f:facet name="header">
