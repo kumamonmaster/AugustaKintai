@@ -281,6 +281,26 @@ public class KintaiBean {
     
     
     /********************** Viewが参照するメソッド ********************/
+    
+    public void setViewYearMonth(int ym) {
+
+        // 年月の文字数を調べる（201810、20189で長さが違うため）
+        if (String.valueOf(ym).length() > 5) {
+
+            // 100で割って年と月で分ける
+            kintaiYearMonth.setYear(ym/100);
+            kintaiYearMonth.setMonth(ym%100);
+        }
+        else {
+            // 10で割って年と月で分ける
+            kintaiYearMonth.setYear(ym/10);
+            kintaiYearMonth.setMonth(ym%10);
+        }
+
+        // 入力された年月で初期化
+        init();
+    }
+    
     /*
     viewYearMonth
     戻り値：String
@@ -296,9 +316,19 @@ public class KintaiBean {
     戻り値：String
     年月
     */
-    public String getViewYearMonth() {
+    public int getViewYearMonth() {
         
-        return String.valueOf(kintaiYearMonth.getYear()) + "年 " + String.valueOf(kintaiYearMonth.getMonth() + "月");
+        return Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
+    }
+    
+    /*
+    getViewYearMonthList
+    戻り値：String
+    年月
+    */
+    public ArrayList<SelectItem> getViewYearMonthList() {
+        
+        return yearMonthList;
     }
     
     /*
@@ -306,11 +336,9 @@ public class KintaiBean {
     戻り値：String
     日付
     */
-    public String getViewDate(int ym, int day) {
+    public String getViewDay(int ym, int day) {
         
-        StringBuilder sb = new StringBuilder(String.valueOf(ym));
-        sb.insert(4, "年");
-        return sb.toString() + "月 " + String.valueOf(day)+"日 "+Utility.conversionDayOfWeek(ym, day);
+        return String.valueOf(day)+"日 ("+Utility.conversionDayOfWeek(ym, day) + ")";
     }
     
     /*
