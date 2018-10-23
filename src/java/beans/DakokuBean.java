@@ -139,7 +139,7 @@ public class DakokuBean {
             connection = DBController.open();
             
             // 現在の年月、ユーザーID、日、でデータ検索
-            attendanceTC.getTableUseEdit(connection, Utility.unionInt(c.get(Calendar.YEAR), c.get(Calendar.MONTH)), this.userData.getId(), c.get(Calendar.DAY_OF_MONTH), kintaiData);
+            attendanceTC.getTableUseEdit(connection, kintaiData.getYm(), this.userData.getId(), kintaiData.getDay(), kintaiData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
