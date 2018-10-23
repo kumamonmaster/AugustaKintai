@@ -129,7 +129,7 @@ public class AttendanceTableController {
         }
     }
     
-    public void setTableUseEdit(Connection connection, KintaiData kintaiData, UserData userData) throws SQLException {
+    public void setTableUseEditDakoku(Connection connection, KintaiData kintaiData, UserData userData) throws SQLException {
         
         PreparedStatement stmt = null;
         

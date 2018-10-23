@@ -54,6 +54,7 @@ public class KintaiBean {
     @ManagedProperty(value="#{kintaiYearMonth}")
     private KintaiYearMonth kintaiYearMonth;
     
+    // データベースのテーブルコントローラー
     private AttendanceTableController attendanceTC = null;
     private KbnTableController kbnTC = null;
     private WorkingPatternTableController workingPatternTC = null;
@@ -61,6 +62,7 @@ public class KintaiBean {
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
+    // 勤怠データリスト
     private ArrayList<KintaiData> kintaiDataList = null;
     // 選択月度リスト
     private ArrayList<SelectItem> yearMonthList = null;
@@ -115,7 +117,7 @@ public class KintaiBean {
         // 月度の最終日を取得
         int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
         // 今月度を設定
-        yearMonthList = setYearMonthList(kintaiYearMonth);
+        yearMonthList = createYearMonthList(kintaiYearMonth);
         
         // kintaiDataListの日付部分を設定
         for (int i = 1; i <= lastDay; i++) {
@@ -184,16 +186,21 @@ public class KintaiBean {
     }
     
     
-    
-    private ArrayList<SelectItem> setYearMonthList(KintaiYearMonth kintaiYearMonth) {
+    /*
+    createYearMonthList
+    YearMonthListを設定
+    */
+    private ArrayList<SelectItem> createYearMonthList(KintaiYearMonth kintaiYearMonth) {
         
         int range = 12;
         ArrayList<SelectItem> list = new ArrayList<SelectItem>();
         Calendar c = new GregorianCalendar();
         c.set(Calendar.YEAR, kintaiYearMonth.getYear());
         c.set(Calendar.MONTH, kintaiYearMonth.getMonth()-1);
+        // 現在からrange/2カ月前を頭に設定
         c.add(Calendar.MONTH, -range/2);
 
+        // range分リストに追加
         for (int i = 0; i < range; i++) {
             list.add(new SelectItem(Utility.unionInt(c.get(Calendar.YEAR),c.get(Calendar.MONTH)+1), c.get(Calendar.YEAR)+"年"+(c.get(Calendar.MONTH)+1)+"月"));
             c.add(Calendar.MONTH, +1);
@@ -202,6 +209,8 @@ public class KintaiBean {
         return list;
     }
     
+    
+    /************************** getter,setter *************************/
     public ArrayList<KintaiData> getKintaiDataList() {
         return kintaiDataList;
     }
@@ -230,56 +239,96 @@ public class KintaiBean {
     
     public void setYearMonthChanged(ValueChangeEvent e) {
         
+        // 以前の入力値と現在の入力値が変わっているか
         if (e.getOldValue() != e.getNewValue()) {
             
+            // 現在の入力値を取得
             int ym = (int)e.getNewValue();
 
+            // 年月の文字数を調べる（201810、20189で長さが違うため）
             if (String.valueOf(ym).length() > 5) {
                 
+                // 100で割って年と月で分ける
                 kintaiYearMonth.setYear(ym/100);
                 kintaiYearMonth.setMonth(ym%100);
             }
             else {
+                // 10で割って年と月で分ける
                 kintaiYearMonth.setYear(ym/10);
                 kintaiYearMonth.setMonth(ym%10);
             }
             
+            // 入力された年月で初期化
             init();
         }
     }
     
     public int getYearMonth() {
-        // ここは修正する
+        
         return Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
     }
     
     public ArrayList<SelectItem> getYearMonthList() {
+        
         return yearMonthList;
     }
     
     public void setYearMonthList(ArrayList<SelectItem> yearMonthList) {
+        
         this.yearMonthList = yearMonthList;
     }
+    /******************************************************************/
     
     
-    public String viewYearMonth() {
+    /********************** Viewが参照するメソッド ********************/
+    /*
+    viewYearMonth
+    戻り値：String
+    年月
+    */
+    public ArrayList<KintaiData> getViewKintaiDataList() {
+        
+        return kintaiDataList;
+    }
+    
+    /*
+    viewYearMonth
+    戻り値：String
+    年月
+    */
+    public String getViewYearMonth() {
         
         return String.valueOf(kintaiYearMonth.getYear()) + "年 " + String.valueOf(kintaiYearMonth.getMonth() + "月");
     }
     
-    public String viewDate(int ym, int day) {
+    /*
+    viewDate
+    戻り値：String
+    日付
+    */
+    public String getViewDate(int ym, int day) {
         
         StringBuilder sb = new StringBuilder(String.valueOf(ym));
         sb.insert(4, "年");
         return sb.toString() + "月 " + String.valueOf(day)+"日 "+Utility.conversionDayOfWeek(ym, day);
     }
     
-    public String viewKbn(KintaiData kintaiData) {
+    /*
+    viewKbn
+    戻り値：String
+    勤怠区分
+    */
+    public String getViewKbn(KintaiData kintaiData) {
         
         return kintaiData.getKbnName();
     }
     
-    public String viewStart(KintaiData kintaiData) {
+    /*
+    viewStart
+    戻り値：String
+    出勤時間
+    */
+    public String getViewStart(KintaiData kintaiData) {
         
         //return (kintaiData.isDbFlag()) ? kintaiData.getStart().toString() : "";
         if (kintaiData.getStart() != null)
@@ -288,7 +337,12 @@ public class KintaiBean {
             return "";
     }
     
-    public String viewEnd(KintaiData kintaiData) {
+    /*
+    viewEnd
+    戻り値：String
+    退勤時間
+    */
+    public String getViewEnd(KintaiData kintaiData) {
         
         //return (kintaiData.isDbFlag()) ? kintaiData.getEnd().toString() : "";
         if (kintaiData.getEnd() != null)
@@ -297,13 +351,12 @@ public class KintaiBean {
             return "";
     }
     
-    public String viewTotal(KintaiData kintaiData) {
-
-//        if (kintaiData.getStart() != null &&
-//                kintaiData.getEnd() != null &&
-//                kintaiData.getRest() != null) {
-//            kintaiData.setTotal(MathKintai.resultTotal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
-//        }
+    /*
+    viewTotal
+    戻り値：String
+    総労働時間
+    */
+    public String getViewTotal(KintaiData kintaiData) {
         
         if (kintaiData.getTotal() != null)
             return kintaiData.getTotal().toString();
@@ -311,22 +364,25 @@ public class KintaiBean {
             return "";
     }
     
-    public String viewRest(KintaiData kintaiData) {
+    /*
+    viewRest
+    戻り値：String
+    休憩時間
+    */
+    public String getViewRest(KintaiData kintaiData) {
         
-        //return (kintaiData.isDbFlag()) ? kintaiData.getRest().toString() : "";
         if (kintaiData.getRest() != null)
             return kintaiData.getRest().toString();
         else
             return "";
     }
     
-    public String viewOver(KintaiData kintaiData) {
-        
-//        if (kintaiData.getStart() != null &&
-//                kintaiData.getEnd() != null &&
-//                kintaiData.getRest() != null) {
-//            kintaiData.setOver(MathKintai.resultOver(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
-//        }
+    /*
+    viewOver
+    戻り値：String
+    残業時間
+    */
+    public String getViewOver(KintaiData kintaiData) {
         
         if (kintaiData.getOver() != null)
             return kintaiData.getOver().toString();
@@ -334,13 +390,12 @@ public class KintaiBean {
             return "";
     }
     
-    public String viewReal(KintaiData kintaiData) {
-        
-//        if (kintaiData.getStart() != null &&
-//                kintaiData.getEnd() != null &&
-//                kintaiData.getRest() != null) {
-//            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest(), kintaiData.getKbnCd()));
-//        }
+    /*
+    viewReal
+    戻り値：String
+    実労働時間
+    */
+    public String getViewReal(KintaiData kintaiData) {
         
         if (kintaiData.getReal() != null)
             return kintaiData.getReal().toString();
@@ -348,11 +403,12 @@ public class KintaiBean {
             return "";
     }
     
-    public String viewLate(KintaiData kintaiData) {
-        
-//        if (kintaiData.getStart() != null &&
-//                kintaiData.getStart_default()!= null)
-//            kintaiData.setLate(MathKintai.resultLate(kintaiData.getStart(), kintaiData.getStart_default()));
+    /*
+    viewLate
+    戻り値：String
+    遅刻時間
+    */
+    public String getViewLate(KintaiData kintaiData) {
         
         if (kintaiData.getLate() != null)
             return kintaiData.getLate().toString();
@@ -360,12 +416,12 @@ public class KintaiBean {
             return "";
     }
     
-    public String viewLeave(KintaiData kintaiData) {
-        
-//        if (kintaiData.getEnd() != null &&
-//                kintaiData.getEnd_default()!= null)
-//            kintaiData.setLeave(MathKintai.resultLeave(kintaiData.getEnd(), kintaiData.getEnd_default()));
-        
+    /*
+    viewLeave
+    戻り値：String
+    早退時間
+    */
+    public String getViewLeave(KintaiData kintaiData) {
         
         if (kintaiData.getLeave() != null)
             return kintaiData.getLeave().toString();
@@ -373,16 +429,50 @@ public class KintaiBean {
             return "";
     }
     
-    public String viewRemarks(KintaiData kintaiData) {
+    /*
+    viewRemarks
+    戻り値：String
+    備考
+    */
+    public String getViewRemarks(KintaiData kintaiData) {
         
         return kintaiData.getRemarks();
     }
+    /**************************************************************/
     
-    public String transitionEditPage(int ym, String user_id, int day) {
+    
+    /************************* ページ遷移 *************************/
+    /*
+    transitionEditPage
+    戻り値:String
+    編集画面へページ遷移
+    */
+    public String goEditPage(int ym, String user_id, int day) {
         
         // データベースへアクセスするためのキーを登録
         this.kintaiKey.setKey(ym, user_id, day);
         
         return "edit.xhtml";
     }
+    
+    /*
+    transitionDakokuPage
+    戻り値:String
+    打刻画面へページ遷移
+    */
+    public String goDakokuPage() {
+        
+        return "dakoku.xhtml";
+    }
+    
+    /*
+    transitionKintaiPage
+    戻り値:String
+    勤怠画面へページ遷移
+    */
+    public String goKintaiPage() {
+        
+        return "kintai.xhtml";
+    }
+    /***************************************************************/
 }

@@ -7,6 +7,10 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>カレンダー</title>
+        <h:form>
+            <h:commandButton value="打刻" action="#{kintaiBean.goDakokuPage()}"/>
+            <h:commandButton value="日付" action="#{kintaiBean.goKintaiPage()}"/>
+        </h:form>
     </h:head>
     <h:body>
         <h:form>
@@ -14,75 +18,75 @@
             <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()">
                 <f:selectItems value="#{kintaiBean.yearMonthList}"/>
             </h:selectOneMenu>
-            <h:outputText value="#{kintaiBean.viewYearMonth()}"/>
+            <h:outputText value="#{kintaiBean.viewYearMonth}"/>
         </h1>
-            <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
+            <h:dataTable border="1" var="item" value="#{kintaiBean.viewKintaiDataList}">
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="日付"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewDate(item.ym, item.day)}"/>
-                    <h:commandButton value="編集" action="#{kintaiBean.transitionEditPage(item.ym,userData.id,item.day)}"/>
+                    <h:outputText value="#{kintaiBean.getViewDate(item.ym, item.day)}"/>
+                    <h:commandButton value="編集" action="#{kintaiBean.goEditPage(ym, user_id, day)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="区分"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewKbn(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewKbn(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="出勤時間"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewStart(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewStart(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="退勤時間"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewEnd(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewEnd(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="総労働時間"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewTotal(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewTotal(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="休憩時間"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewRest(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewRest(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="残業時間"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewOver(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewOver(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="実労働時間"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewReal(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewReal(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="遅刻時間"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewLate(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewLate(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="早退時間"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewLeave(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewLeave(item)}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">
                     <h:outputText value="備考"/>
                     </f:facet>
-                    <h:outputText value="#{kintaiBean.viewRemarks(item)}"/>
+                    <h:outputText value="#{kintaiBean.getViewRemarks(item)}"/>
                 </h:column>
             </h:dataTable>
         </h:form>
@@ -91,8 +95,6 @@
 <p>#{userData.name}</p>
 <p>#{userData.mail}</p>
 <p>#{userData.password}</p>
-<p>#{kintaiBean.kintaiDataList.get(0)}</p>
-<p>#{kintaiBean.kintaiDataList.get(1)}</p>
     </h:body>
 </html>
 

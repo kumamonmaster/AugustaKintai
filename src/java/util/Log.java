@@ -5,7 +5,6 @@
  */
 package util;
 
-import com.mysql.jdbc.log.LogFactory;
 import java.util.logging.Logger;
 
 /**
