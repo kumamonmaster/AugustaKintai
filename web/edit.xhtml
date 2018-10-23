@@ -8,7 +8,7 @@
     </h:head>
     <h:body>
         <h:form>
-            <p>日付 <h:outputText value="#{kintaiKey.ym}"/> <h:outputText value="#{kintaiKey.day}"/></p>
+            <p>日付 <h:outputText value="#{editBean.viewYM}"/> <h:outputText value="#{editBean.viewDay}"/></p>
             <p>
                 区分
                 <h:selectOneMenu value="#{editBean.viewKbn}" onchange="submit()">

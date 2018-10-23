@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -465,6 +466,56 @@ public class KintaiBean {
     public String getViewRemarks(KintaiData kintaiData) {
         
         return kintaiData.getRemarks();
+    }
+    
+    /*
+    getViewTotalSum
+    戻り値：String
+    備考
+    */
+    public String getViewSumTotal() {
+        
+        return String.valueOf(MathKintai.resultSumTotal(kintaiDataList));
+    }
+    
+    /*
+    getViewOverSum
+    戻り値：String
+    備考
+    */
+    public String getViewSumOver() {
+        
+        return String.valueOf(MathKintai.resultSumOver(kintaiDataList));
+    }
+    
+    /*
+    getViewRealSum
+    戻り値：String
+    備考
+    */
+    public String getViewSumReal() {
+        
+        return String.valueOf(MathKintai.resultSumReal(kintaiDataList));
+    }
+    
+    /*
+    getViewLateSum
+    戻り値：String
+    備考
+    */
+    public String getViewSumLate() {
+        
+        return String.valueOf(MathKintai.resultSumLate(kintaiDataList));
+    }
+    
+    /*
+    getViewLeaveSum
+    戻り値：String
+    備考
+    */
+    public String getViewSumLeave() {
+        
+        return String.valueOf(MathKintai.resultSumLeave(kintaiDataList));
     }
     /**************************************************************/
     

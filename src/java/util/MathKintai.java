@@ -5,7 +5,10 @@
  */
 package util;
 
+import data.KintaiData;
 import java.sql.Time;
+import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 
 /**
  *
@@ -21,9 +24,9 @@ public class MathKintai {
     
     private static int[] mathTotal(Time start, Time end, Time rest) {
         
-        int[] hm = null;
+        int[] hm = new int[2];
                 
-        if (start != end) {
+        if (!start.equals(end)) {
             
             // 出勤時間のhhとmmをintへ
             int hhStart = Integer.parseInt(start.toString().substring(0, 2));
@@ -79,6 +82,10 @@ public class MathKintai {
         
         Time real = null;
         if (hm[0] == 0 && hm[1] == 0) {
+            
+            real = new Time(Time.valueOf("00:00:00").getTime());
+        } else {
+            
             // 有休分はマイナスする
             if (kbn_cd == 4) {
                 real = new Time(Time.valueOf(String.valueOf(hm[HOUR]-8)+":"+String.valueOf(hm[MINUTE])+":00").getTime());
@@ -87,8 +94,6 @@ public class MathKintai {
             } else {
                 real = new Time(Time.valueOf(String.valueOf(hm[HOUR])+":"+String.valueOf(hm[MINUTE])+":00").getTime());
             }
-        } else {
-            real = new Time(Time.valueOf("00:00:00").getTime());
         }
         
         return real;
@@ -136,5 +141,85 @@ public class MathKintai {
         }
         
         return leave;
+    }
+    
+    public static double resultSumTotal(ArrayList<KintaiData> kintaiDataList) {
+        
+        double sumTime = 0.0;
+        
+        for (KintaiData kintaiData: kintaiDataList) {
+            
+            Time total = kintaiData.getTotal();
+            if (total != null) {
+                sumTime += (double)total.toLocalTime().get(ChronoField.HOUR_OF_DAY);
+                sumTime += (double)total.toLocalTime().get(ChronoField.MINUTE_OF_HOUR)/60.0;
+            }
+        }
+        
+        return sumTime;
+    }
+    
+    public static double resultSumOver(ArrayList<KintaiData> kintaiDataList) {
+        
+        double sumTime = 0.0;
+        
+        for (KintaiData kintaiData: kintaiDataList) {
+            
+            Time over = kintaiData.getOver();
+            if (over != null) {
+                sumTime += (double)over.toLocalTime().get(ChronoField.HOUR_OF_DAY);
+                sumTime += (double)over.toLocalTime().get(ChronoField.MINUTE_OF_HOUR)/60.0;
+            }
+        }
+        
+        return sumTime;
+    }
+    
+    public static double resultSumReal(ArrayList<KintaiData> kintaiDataList) {
+        
+        double sumTime = 0.0;
+        
+        for (KintaiData kintaiData: kintaiDataList) {
+            
+            Time real = kintaiData.getReal();
+            if (real != null) {
+                sumTime += (double)real.toLocalTime().get(ChronoField.HOUR_OF_DAY);
+                sumTime += (double)real.toLocalTime().get(ChronoField.MINUTE_OF_HOUR)/60.0;
+            }
+        }
+        
+        return sumTime;
+    }
+    
+    public static double resultSumLate(ArrayList<KintaiData> kintaiDataList) {
+        
+        double sumTime = 0.0;
+        
+        for (KintaiData kintaiData: kintaiDataList) {
+            
+            Time late = kintaiData.getLate();
+            if (late != null) {
+                sumTime += (double)late.toLocalTime().get(ChronoField.HOUR_OF_DAY);
+                sumTime += (double)late.toLocalTime().get(ChronoField.MINUTE_OF_HOUR)/60.0;
+            }
+        }
+        
+        return sumTime;
+    }
+    
+    public static double resultSumLeave(ArrayList<KintaiData> kintaiDataList) {
+        
+        double sumTime = 0.0;
+        
+        for (KintaiData kintaiData: kintaiDataList) {
+            
+            Time leave = kintaiData.getLeave();
+            if (leave != null) {
+                sumTime += (double)leave.toLocalTime().get(ChronoField.HOUR_OF_DAY);
+                sumTime += (double)leave.toLocalTime().get(ChronoField.MINUTE_OF_HOUR)/60.0;
+            }
+        }
+        
+        return sumTime;
     }
 }

@@ -298,6 +298,14 @@ public class EditBean {
         kintaiData.setRemarks(remarks);
     }
     
+    public int getViewYM() {
+        return kintaiData.getYm();
+    }
+    
+    public int getViewDay() {
+        return kintaiData.getDay();
+    }
+    
     public int getViewKbn() {
         return kintaiData.getKbnCd();
     }
