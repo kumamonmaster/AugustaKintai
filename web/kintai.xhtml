@@ -2,97 +2,114 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>カレンダー</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"/>
+        <title>勤怠管理システム</title>
     </h:head>
     <h:body>
-        <h:form>
-        <h1>
-            <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()">
-                <f:selectItems value="#{kintaiBean.yearMonthList}"/>
-            </h:selectOneMenu>
-            <h:outputText value="#{kintaiBean.viewYearMonth()}"/>
-        </h1>
-            <h:dataTable border="1" var="item" value="#{kintaiBean.kintaiDataList}">
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="日付"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewDate(item.ym, item.day)}"/>
-                    <h:commandButton value="編集" action="#{kintaiBean.transitionEditPage(item.ym,userData.id,item.day)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="区分"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewKbn(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="出勤時間"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewStart(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="退勤時間"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewEnd(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="総労働時間"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewTotal(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="休憩時間"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewRest(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="残業時間"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewOver(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="実労働時間"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewReal(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="遅刻時間"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewLate(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="早退時間"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewLeave(item)}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">
-                    <h:outputText value="備考"/>
-                    </f:facet>
-                    <h:outputText value="#{kintaiBean.viewRemarks(item)}"/>
-                </h:column>
-            </h:dataTable>
-        </h:form>
+        <nav class="navbar navbar-light bg-light">
+            <span class="navbar-brand mb-0 h1">オーガスタ勤怠システム</span>
+        </nav>
+        <div class="container" style="padding-top: 30px">
+            <div class="row">
+                <table class="table table-bordered table-sm col-md-7">
+                    <thead>
+                        <tr class="text-center table-active">
+                            <th>社員番号</th>
+                            <th>氏名</th>
+                            <th>メールアドレス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            <td>#{userData.id}</td>
+                            <td>#{userData.name}</td>
+                            <td>#{userData.mail}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h:form>
+                <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()" styleClass="form-control col-sm-2">
+                    <f:selectItems value="#{kintaiBean.yearMonthList}"/>
+                </h:selectOneMenu>
+                <h:dataTable var="item" value="#{kintaiBean.kintaiDataList}" styleClass="table table-bordered" style="margin-top: 20px;">
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="日付"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewDate(item.ym,item.day)}"/>
+                        <h:commandButton value="編集" styleClass="btn btn-outline-primary btn-sm" action="#{kintaiBean.transitionEditPage(item.ym,userData.id,item.day)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="区分"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewKbn(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="出勤時間"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewStart(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="退勤時間"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewEnd(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="総労働時間"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewTotal(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="休憩時間"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewRest(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="残業時間"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewOver(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="実労働時間"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewReal(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="遅刻時間"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewLate(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="早退時間"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewLeave(item)}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="備考"/>
+                        </f:facet>
+                        <h:outputText value="#{kintaiBean.viewRemarks(item)}"/>
+                    </h:column>
+                </h:dataTable>
+            </h:form>
+        </div>
 
-<p>#{userData.id}</p>
-<p>#{userData.name}</p>
-<p>#{userData.mail}</p>
-<p>#{userData.password}</p>
-<p>#{kintaiBean.kintaiDataList.get(0)}</p>
-<p>#{kintaiBean.kintaiDataList.get(1)}</p>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     </h:body>
 </html>
 
