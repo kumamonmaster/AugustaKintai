@@ -201,7 +201,7 @@ public class DakokuBean {
             }
         }
         
-        return "dakoku.xhtml";
+        return "dakoku.xhtml?faces-redirect=true";
     }
     
     /*
@@ -304,7 +304,7 @@ public class DakokuBean {
             }
         }
         
-        return "dakoku.xhtml";
+        return "dakoku.xhtml?faces-redirect=true";
     }
     
     /*
@@ -351,11 +351,11 @@ public class DakokuBean {
     
     public String goDakokuPage() {
         
-        return "dakoku.xhtml";
+        return "dakoku.xhtml?faces-redirect=true";
     }
     
     public String goKintaiPage() {
         
-        return "kintai.xhtml";
+        return "kintai.xhtml?faces-redirect=true";
     }
 }

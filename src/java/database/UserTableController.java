@@ -24,7 +24,7 @@ public class UserTableController {
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
-    public String selectOnly(Connection connection, UserData userData) throws SQLException {
+    public boolean selectOnly(Connection connection, UserData userData) throws SQLException {
         
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -46,7 +46,7 @@ public class UserTableController {
                     userData.setName(rs.getString("name"));
                     userData.setWorkptn_cd(rs.getInt("workptn_cd"));
 
-                    return "kintai.xhtml";
+                    return true;
                 }
             }
         
@@ -75,6 +75,6 @@ public class UserTableController {
             }
         }
         
-        return null;
+        return false;
     }
 }

@@ -35,13 +35,13 @@ public class LoginBean {
     @ManagedProperty(value="#{userData}")
     private UserData userData;
     
-    private UserTableController utc = null;
+    private UserTableController userTC = null;
 
     private static final Logger LOG = Log.getLog();
 
     
     public LoginBean() {
-        utc = new UserTableController();
+        userTC = new UserTableController();
     }
     
     public void setUserData(UserData userData) {
@@ -58,7 +58,8 @@ public class LoginBean {
             // データベース接続
             connection = DBController.open();
             
-            nextPage = utc.selectOnly(connection, this.userData);
+            if (userTC.selectOnly(connection, this.userData))
+                return "kintai.xhtml?faces-redirect=true";
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -75,6 +76,6 @@ public class LoginBean {
             }
         }
 
-        return nextPage;
+        return null;
     }
 }

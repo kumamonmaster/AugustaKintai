@@ -531,7 +531,7 @@ public class KintaiBean {
         // データベースへアクセスするためのキーを登録
         this.kintaiKey.setKey(ym, user_id, day);
         
-        return "edit.xhtml";
+        return "edit.xhtml?faces-redirect=true";
     }
     
     /*
@@ -541,7 +541,7 @@ public class KintaiBean {
     */
     public String goDakokuPage() {
         
-        return "dakoku.xhtml";
+        return "dakoku.xhtml?faces-redirect=true";
     }
     
     /*
@@ -551,7 +551,7 @@ public class KintaiBean {
     */
     public String goKintaiPage() {
         
-        return "kintai.xhtml";
+        return "kintai.xhtml?faces-redirect=true";
     }
     /***************************************************************/
 }

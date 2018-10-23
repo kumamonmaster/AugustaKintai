@@ -196,7 +196,7 @@ public class EditBean {
             }
         }
         
-        return "kintai.xhtml";
+        return "kintai.xhtml?faces-redirect=true";
     }
     
     /*
@@ -273,7 +273,7 @@ public class EditBean {
     勤怠ページ画面遷移
     */
     public String goKintaiPage() {
-        return "kintai.xhtml";
+        return "kintai.xhtml?faces-redirect=true";
     }
     
     
