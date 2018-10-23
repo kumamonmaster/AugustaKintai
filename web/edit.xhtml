@@ -32,7 +32,7 @@
                 </h:selectOneMenu>
             </p>
         <p>備考<h:inputText value="#{editBean.viewRemarks}" onchange="submit()"/></p>
-            <h:commandButton value="戻る" action="#{editBean.back()}"/>
+            <h:commandButton value="戻る" action="#{editBean.goKintaiPage()}"/>
             <h:commandButton value="登録" action="#{editBean.entry()}"/>
         </h:form>
         年月<h:outputText value="#{editBean.kintaiData.ym}"/>
