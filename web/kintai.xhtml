@@ -14,16 +14,16 @@
         </nav>
         <div class="container" style="padding-top: 30px">
             <div class="row">
-                <table class="table table-bordered col-md-7">
+                <table class="table table-bordered table-sm col-md-7">
                     <thead>
-                        <tr>
+                        <tr class="text-center table-active">
                             <th>社員番号</th>
                             <th>氏名</th>
                             <th>メールアドレス</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr class="text-center">
                             <td>#{userData.id}</td>
                             <td>#{userData.name}</td>
                             <td>#{userData.mail}</td>
@@ -35,13 +35,13 @@
                 <h:selectOneMenu value="#{kintaiBean.yearMonth}" valueChangeListener="#{kintaiBean.setYearMonthChanged}" onchange="submit()" styleClass="form-control col-sm-2">
                     <f:selectItems value="#{kintaiBean.yearMonthList}"/>
                 </h:selectOneMenu>
-                <h:dataTable var="item" value="#{kintaiBean.kintaiDataList}" styleClass="table table-bordered">
+                <h:dataTable var="item" value="#{kintaiBean.kintaiDataList}" styleClass="table table-bordered" style="margin-top: 20px;">
                     <h:column>
                         <f:facet name="header">
                             <h:outputText value="日付"/>
                         </f:facet>
-                        <h:outputText value="#{kintaiBean.viewDate(item.ym, item.day)}"/>
-                        <h:commandButton value="編集" action="#{kintaiBean.transitionEditPage(item.ym,userData.id,item.day)}"/>
+                        <h:outputText value="#{kintaiBean.viewDate(item.ym,item.day)}"/>
+                        <h:commandButton value="編集" styleClass="btn btn-outline-primary btn-sm" action="#{kintaiBean.transitionEditPage(item.ym,userData.id,item.day)}"/>
                     </h:column>
                     <h:column>
                         <f:facet name="header">
