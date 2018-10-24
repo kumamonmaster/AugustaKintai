@@ -11,27 +11,18 @@ import data.UserData;
 import database.AttendanceTableController;
 import database.DBController;
 import database.WorkPatternTableController;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.naming.NamingException;
 import util.Log;
 import util.MathKintai;
-import util.Utility;
 
 
 /**
@@ -223,7 +214,7 @@ public class EditBean {
             // 残業時間算出
             kintaiData.setOver(MathKintai.resultOver(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
             // 実労働時間算出
-            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest(), kintaiData.getKbnCd()));
+            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getStart_default(), kintaiData.getEnd_default(), kintaiData.getRest(), kintaiData.getKbnCd()));
         }
         
         // nullチェック
