@@ -10,7 +10,7 @@ import data.KintaiKey;
 import data.UserData;
 import database.AttendanceTableController;
 import database.DBController;
-import database.WorkingPatternTableController;
+import database.WorkPatternTableController;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.sql.Connection;
@@ -49,7 +49,7 @@ public class EditBean {
     
     // データベースのテーブルコントローラー
     private AttendanceTableController attendanceTC = null;
-    private WorkingPatternTableController workingpatternTC = null;
+    private WorkPatternTableController workingpatternTC = null;
     
     // 勤怠データ
     private KintaiData kintaiData = null;
@@ -73,7 +73,7 @@ public class EditBean {
     @PostConstruct
     public void init() {
         attendanceTC = new AttendanceTableController();
-        workingpatternTC = new WorkingPatternTableController();
+        workingpatternTC = new WorkPatternTableController();
         
         try {
             // 勤怠データ初期化

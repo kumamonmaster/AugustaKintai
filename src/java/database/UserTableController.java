@@ -31,7 +31,7 @@ public class UserTableController {
         try {
             
             // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT id,name,password,workptn_cd FROM user WHERE mail = ?");
+            stmt = connection.prepareStatement("SELECT user_id,name,password,workptn_cd FROM user WHERE mail = ?");
             stmt.setString(1, userData.getMail());
             rs = stmt.executeQuery();
 
@@ -41,7 +41,7 @@ public class UserTableController {
                     // ユーザーデータを作成
                     //this.userData.setId(rs.getString("id"));
                     //userData = new UserData(rs.getString("id"),rs.getString("name"),this.address);
-                    userData.setId(rs.getString("id"));
+                    userData.setId(rs.getString("user_id"));
                     userData.setName(rs.getString("name"));
                     userData.setWorkptn_cd(rs.getInt("workptn_cd"));
 

@@ -54,7 +54,7 @@ public class DBController {
                     Logger.getLogger(DBController.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
-                connection = DriverManager.getConnection("jdbc:mysql://testdb.cfchg067ulax.us-east-2.rds.amazonaws.com:3306/testdb?useUnicode=true&characterEncoding=utf8", "dbuser", "password");
+                connection = DriverManager.getConnection("jdbc:mysql://augusta-kintai.cr8sxdwzy9ux.ap-northeast-1.rds.amazonaws.com:3306/augusta_kintai?useUnicode=true&characterEncoding=utf8", "admin", "augusta1234");
                 
         } catch (SQLException ex) {
             

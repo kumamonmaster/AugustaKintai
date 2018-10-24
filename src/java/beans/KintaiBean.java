@@ -13,7 +13,7 @@ import data.UserData;
 import database.AttendanceTableController;
 import database.DBController;
 import database.KbnTableController;
-import database.WorkingPatternTableController;
+import database.WorkPatternTableController;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,7 +59,7 @@ public class KintaiBean implements Serializable {
     // データベースのテーブルコントローラー
     private AttendanceTableController attendanceTC = null;
     private KbnTableController kbnTC = null;
-    private WorkingPatternTableController workingPatternTC = null;
+    private WorkPatternTableController workingPatternTC = null;
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
@@ -82,7 +82,7 @@ public class KintaiBean implements Serializable {
         
         attendanceTC = new AttendanceTableController();
         kbnTC = new KbnTableController();
-        workingPatternTC = new WorkingPatternTableController();
+        workingPatternTC = new WorkPatternTableController();
         
         // 打刻画面メッセージを初期化
         dakokuMessage.setResultMessage("");
