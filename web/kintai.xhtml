@@ -55,7 +55,7 @@
                             <h:outputText value="日付"/>
                         </f:facet>
                         <h:outputText value="#{kintaiBean.getViewDay(item.ym,item.day)}"/>
-                        <h:commandButton value="編集" styleClass="btn btn-outline-primary btn-sm" action="#{kintaiBean.goEditPage(item.ym,userData.id,item.day)}"/>
+                        <h:commandButton value="編集" styleClass="btn btn-outline-primary btn-sm" action="#{kintaiBean.goEditPage(item.ym,userData.id,item.day)}" style="margin-left: 7px;"/>
                     </h:column>
                     <h:column>
                         <f:facet name="header">
