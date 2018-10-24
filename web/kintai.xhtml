@@ -110,17 +110,34 @@
                     </h:column>
                 </h:dataTable>
             </h:form>
+            <h2>勤務時間</h2>
+            <table class="table table-bordered table-sm col-sm-4">
+                <tr>
+                    <th class="table-active">総労働時間合計</th>
+                    <td>#{kintaiBean.viewSumTotal}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">残業時間合計</th>
+                    <td>#{kintaiBean.viewSumOver}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">実労働時間時間合計</th>
+                    <td>#{kintaiBean.viewSumReal}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">遅刻時間合計</th>
+                    <td>#{kintaiBean.viewSumLate}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">早退時間合計</th>
+                    <td>#{kintaiBean.viewSumLeave}</td>
+                </tr>
+            </table>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    
-        <p>総労働時間合計     #{kintaiBean.viewSumTotal}</p>
-        <p>残業時間合計       #{kintaiBean.viewSumOver}</p>
-        <p>実労働時間時間合計 #{kintaiBean.viewSumReal}</p>
-        <p>遅刻時間合計       #{kintaiBean.viewSumLate}</p>
-        <p>早退時間合計       #{kintaiBean.viewSumLeave}</p>
     </h:body>
 </html>
 
