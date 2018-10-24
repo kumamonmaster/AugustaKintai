@@ -5,6 +5,7 @@
  */
 package beans;
 
+import data.DakokuMessage;
 import data.KintaiData;
 import data.UserData;
 import database.AttendanceTableController;
@@ -13,15 +14,14 @@ import database.WorkingPatternTableController;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.naming.NamingException;
 import util.Log;
@@ -33,11 +33,13 @@ import util.Utility;
  * @author 佐藤孝史
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class DakokuBean {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+    @ManagedProperty(value="#{dakokuMessage}")
+    private DakokuMessage dakokuMessage;
     
     private KintaiData kintaiData = null;
     
@@ -46,12 +48,22 @@ public class DakokuBean {
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
+    
+    private boolean entry = false;
+    private boolean entrySuccess = false;
+    private boolean entryType = false;
+    private Time entryTime = null;
+    private String resultMessage = null;
 
     
     
     /************************ getter,setter ****************************/
     public void setUserData(UserData userData) {
         this.userData = userData;
+    }
+
+    public void setDakokuMessage(DakokuMessage dakokuMessage) {
+        this.dakokuMessage = dakokuMessage;
     }
     /*******************************************************************/
     
@@ -63,6 +75,13 @@ public class DakokuBean {
     public void init() {
         attendanceTC = new AttendanceTableController();
         workinpatternTC = new WorkingPatternTableController();
+        
+        // 現在の時刻を保存
+        Calendar c = new GregorianCalendar();
+        entryTime = Time.valueOf(String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(c.get(Calendar.MINUTE)) + ":00");
+        
+        // 出退勤ボタンのフラグをfalseに
+        entry = false;
         
         
         try {
@@ -161,20 +180,22 @@ public class DakokuBean {
     workStart
     出勤ボタンが押されたら、出勤時刻をデータベースに登録
     */
-    public String workStart() throws SQLException, NamingException {
+    public String workStartEntry() throws SQLException, NamingException {
         
         Connection connection = null;
+        Time workStart = null;
+        entrySuccess = false;
+        entryType = false;
+        entry = true;
         
         // すでに本日の出勤が打刻されている場合は以下を処理しない
-        if (kintaiData.getStart() != null)
+        if (kintaiData.getStart() != null) {
+            dakokuMessage.setResultMessage("本日はすでに出勤されています。");
             return null;
-        
-        // 一旦、現在の出勤時刻を保持
-        Calendar c = new GregorianCalendar();
-        Time workStart = Time.valueOf(String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(c.get(Calendar.MINUTE)) + ":00");
+        }
         
         // 出勤時刻を調整
-        workStart = adjustStartTime(workStart);
+        workStart = adjustStartTime(entryTime);
         
         // 出勤時刻を設定
         kintaiData.setStart(workStart);
@@ -200,6 +221,11 @@ public class DakokuBean {
                 ex.printStackTrace();
             }
         }
+        
+        // 登録成功
+        entrySuccess = true;
+        LocalTime localTime = entryTime.toLocalTime();
+        dakokuMessage.setResultMessage(String.valueOf(localTime.getHour()) + ":" + String.valueOf(localTime.getMinute()) + "に出勤いたしました。");
         
         return "dakoku.xhtml?faces-redirect=true";
     }
@@ -252,23 +278,27 @@ public class DakokuBean {
     workStart
     退勤ボタンが押されたら、退勤時刻をデータベースに登録
     */
-    public String workEnd() throws SQLException, NamingException {
+    public String workEndEntry() throws SQLException, NamingException {
         
         Connection connection = null;
+        Time workEnd = null;
+        entrySuccess = false;
+        entryType = true;
+        entry = true;
         
         // すでに本日の退勤が打刻されている場合は以下を処理しない
-        if (kintaiData.getEnd() != null)
+        if (kintaiData.getEnd() != null) {
+            dakokuMessage.setResultMessage("本日はすでに退勤されています。");
             return null;
+        }
         // 出勤が押される前に退勤は押せない
-        if (kintaiData.getStart() == null)
+        if (kintaiData.getStart() == null) {
+            dakokuMessage.setResultMessage("本日はまだ出勤されていません。");
             return null;
-        
-        // 一旦、現在の退勤時刻を保持
-        Calendar c = new GregorianCalendar();
-        Time workEnd = Time.valueOf(String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(c.get(Calendar.MINUTE)) + ":00");
+        }
         
         // 退勤時刻を調整
-        workEnd = adjustEndTime(workEnd);
+        workEnd = adjustEndTime(entryTime);
         
         // 退勤時刻設定
         kintaiData.setEnd(workEnd);
@@ -303,6 +333,11 @@ public class DakokuBean {
                 ex.printStackTrace();
             }
         }
+        
+        // 登録成功
+        entrySuccess = true;
+        LocalTime localTime = entryTime.toLocalTime();
+        dakokuMessage.setResultMessage(String.valueOf(localTime.getHour()) + ":" + String.valueOf(localTime.getMinute()) + "に退勤いたしました。");
         
         return "dakoku.xhtml?faces-redirect=true";
     }
@@ -348,6 +383,20 @@ public class DakokuBean {
         // 調整した出勤時刻を返す
         return Time.valueOf(sb.toString());
     }
+    
+    
+    public String getViewEntryTime() {
+        
+        LocalTime localTime = entryTime.toLocalTime();
+        
+        return String.valueOf(localTime.getHour()) + ":" + String.valueOf(localTime.getMinute());
+    }
+
+    public String getViewResultMessage() {
+        
+        return dakokuMessage.getResultMessage();
+    }
+    
     
     public String goDakokuPage() {
         

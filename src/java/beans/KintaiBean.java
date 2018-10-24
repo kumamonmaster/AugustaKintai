@@ -5,6 +5,7 @@
  */
 package beans;
 
+import data.DakokuMessage;
 import data.KintaiData;
 import data.KintaiKey;
 import data.KintaiYearMonth;
@@ -13,12 +14,12 @@ import database.AttendanceTableController;
 import database.DBController;
 import database.KbnTableController;
 import database.WorkingPatternTableController;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.time.temporal.ChronoField;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -27,8 +28,6 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
-import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -46,7 +45,7 @@ import util.Utility;
  */
 @ManagedBean
 @ViewScoped
-public class KintaiBean {
+public class KintaiBean implements Serializable {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
@@ -54,6 +53,8 @@ public class KintaiBean {
     private KintaiKey kintaiKey;
     @ManagedProperty(value="#{kintaiYearMonth}")
     private KintaiYearMonth kintaiYearMonth;
+    @ManagedProperty(value="#{dakokuMessage}")
+    private DakokuMessage dakokuMessage;
     
     // データベースのテーブルコントローラー
     private AttendanceTableController attendanceTC = null;
@@ -82,6 +83,9 @@ public class KintaiBean {
         attendanceTC = new AttendanceTableController();
         kbnTC = new KbnTableController();
         workingPatternTC = new WorkingPatternTableController();
+        
+        // 打刻画面メッセージを初期化
+        dakokuMessage.setResultMessage("");
         
         try {
             // rowData初期化
@@ -228,6 +232,10 @@ public class KintaiBean {
     public void setKintaiYearMonth(KintaiYearMonth kintaiYearMonth) {
         this.kintaiYearMonth = kintaiYearMonth;
     }
+
+    public void setDakokuMessage(DakokuMessage dakokuMessage) {
+        this.dakokuMessage = dakokuMessage;
+    }
     
     public void setYearMonth(int ym) {
         
@@ -359,11 +367,14 @@ public class KintaiBean {
     */
     public String getViewStart(KintaiData kintaiData) {
         
-        //return (kintaiData.isDbFlag()) ? kintaiData.getStart().toString() : "";
-        if (kintaiData.getStart() != null)
-            return kintaiData.getStart().toString();
-        else
+        if (kintaiData.getStart() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getStart().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -373,11 +384,14 @@ public class KintaiBean {
     */
     public String getViewEnd(KintaiData kintaiData) {
         
-        //return (kintaiData.isDbFlag()) ? kintaiData.getEnd().toString() : "";
-        if (kintaiData.getEnd() != null)
-            return kintaiData.getEnd().toString();
-        else
+        if (kintaiData.getEnd() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getEnd().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -387,10 +401,14 @@ public class KintaiBean {
     */
     public String getViewTotal(KintaiData kintaiData) {
         
-        if (kintaiData.getTotal() != null)
-            return kintaiData.getTotal().toString();
-        else
+        if (kintaiData.getTotal() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getTotal().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -400,10 +418,14 @@ public class KintaiBean {
     */
     public String getViewRest(KintaiData kintaiData) {
         
-        if (kintaiData.getRest() != null)
-            return kintaiData.getRest().toString();
-        else
+        if (kintaiData.getRest() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getRest().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -413,10 +435,14 @@ public class KintaiBean {
     */
     public String getViewOver(KintaiData kintaiData) {
         
-        if (kintaiData.getOver() != null)
-            return kintaiData.getOver().toString();
-        else
+        if (kintaiData.getOver() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getOver().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -426,10 +452,14 @@ public class KintaiBean {
     */
     public String getViewReal(KintaiData kintaiData) {
         
-        if (kintaiData.getReal() != null)
-            return kintaiData.getReal().toString();
-        else
+        if (kintaiData.getReal() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getReal().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -439,10 +469,14 @@ public class KintaiBean {
     */
     public String getViewLate(KintaiData kintaiData) {
         
-        if (kintaiData.getLate() != null)
-            return kintaiData.getLate().toString();
-        else
+        if (kintaiData.getLate() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getLate().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -452,10 +486,14 @@ public class KintaiBean {
     */
     public String getViewLeave(KintaiData kintaiData) {
         
-        if (kintaiData.getLeave() != null)
-            return kintaiData.getLeave().toString();
-        else
+        if (kintaiData.getLeave() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getLeave().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
