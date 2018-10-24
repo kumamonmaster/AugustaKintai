@@ -5,6 +5,7 @@
  */
 package beans;
 
+import data.DakokuMessage;
 import data.KintaiData;
 import data.KintaiKey;
 import data.KintaiYearMonth;
@@ -13,6 +14,7 @@ import database.AttendanceTableController;
 import database.DBController;
 import database.KbnTableController;
 import database.WorkingPatternTableController;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,7 +48,7 @@ import util.Utility;
  */
 @ManagedBean
 @ViewScoped
-public class KintaiBean {
+public class KintaiBean implements Serializable {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
@@ -54,6 +56,8 @@ public class KintaiBean {
     private KintaiKey kintaiKey;
     @ManagedProperty(value="#{kintaiYearMonth}")
     private KintaiYearMonth kintaiYearMonth;
+    @ManagedProperty(value="#{dakokuMessage}")
+    private DakokuMessage dakokuMessage;
     
     // データベースのテーブルコントローラー
     private AttendanceTableController attendanceTC = null;
@@ -82,6 +86,9 @@ public class KintaiBean {
         attendanceTC = new AttendanceTableController();
         kbnTC = new KbnTableController();
         workingPatternTC = new WorkingPatternTableController();
+        
+        // 打刻画面メッセージを初期化
+        dakokuMessage.setResultMessage("");
         
         try {
             // rowData初期化
@@ -227,6 +234,10 @@ public class KintaiBean {
     
     public void setKintaiYearMonth(KintaiYearMonth kintaiYearMonth) {
         this.kintaiYearMonth = kintaiYearMonth;
+    }
+
+    public void setDakokuMessage(DakokuMessage dakokuMessage) {
+        this.dakokuMessage = dakokuMessage;
     }
     
     public void setYearMonth(int ym) {
