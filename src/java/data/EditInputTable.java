@@ -9,6 +9,10 @@ import database.DBController;
 import database.KbnTableController;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,63 +64,32 @@ public class EditInputTable {
     private void initTimeTable() {
         
         timeTable = new ArrayList<SelectItem>();
-        int m = 0;
+        SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
         
-        for (int h = 0; h < 24; m += 15) {
-            if (m >= 60) {
-                m = 0;
-                h++;
-            }
+        Time time = Time.valueOf("00:00:00");
+        LocalTime localTime = time.toLocalTime();
+        
+        for (int i = 0; i < 4*24+1; i++) {
             
-            String hs = null;
-            String ms = null;
+            timeTable.add(new SelectItem(localTime.toString()+":00", localTime.toString()));
             
-            if (h < 10) {
-                hs = "0";
-            } else {
-                hs = "";
-            }
-            if (m < 10) {
-                ms = "0";
-            } else {
-                ms = "";
-            }
-            hs += String.valueOf(h)+":";
-            ms += String.valueOf(m);
-            
-            timeTable.add(new SelectItem(hs+ms+":00", hs+ms));
+            localTime = localTime.plusMinutes(15);
         }
     }
     
     private void initRestTable() {
         
         restTable = new ArrayList<SelectItem>();
-        int m = 0;
+        SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
         
-        for (int h = 1; h < 5; m += 15) {
-            if (m >= 60) {
-                m = 0;
-                h++;
-            }
+        Time time = Time.valueOf("00:00:00");
+        LocalTime localTime = time.toLocalTime();
+        
+        for (int i = 0; i < 4*3; i++) {
             
-            String hs = null;
-            String ms = null;
+            localTime = localTime.plusMinutes(15);
             
-            if (h < 10) {
-                hs = "0";
-            } else {
-                hs = "";
-            }
-            if (m < 10) {
-                ms = "0";
-            } else {
-                ms = "";
-            }
-            //double d = (double)h + ((double)m/60.0);
-            hs += String.valueOf(h)+":";
-            ms += String.valueOf(m);
-            
-            restTable.add(new SelectItem(hs+ms+":00", hs+ms));
+            restTable.add(new SelectItem(localTime.toString()+":00", localTime.toString()));
         }
     }
     
