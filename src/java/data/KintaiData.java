@@ -5,15 +5,7 @@
  */
 package data;
 
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.util.Date;
 import java.sql.Time;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
-import util.MathKintai;
-import util.Utility;
 
 /**
  *

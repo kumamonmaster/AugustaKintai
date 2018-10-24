@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.model.SelectItem;
-import javax.naming.NamingException;
 import util.Log;
 
 /**

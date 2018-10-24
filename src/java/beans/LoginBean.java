@@ -6,21 +6,15 @@
 package beans;
 
 import database.DBController;
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import javax.faces.bean.ManagedBean;
 import data.UserData;
 import database.UserTableController;
-import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
-import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
 import javax.naming.NamingException;
 import util.Log;
 
