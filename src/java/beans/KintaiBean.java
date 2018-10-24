@@ -16,10 +16,13 @@ import database.KbnTableController;
 import database.WorkingPatternTableController;
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -370,11 +373,14 @@ public class KintaiBean implements Serializable {
     */
     public String getViewStart(KintaiData kintaiData) {
         
-        //return (kintaiData.isDbFlag()) ? kintaiData.getStart().toString() : "";
-        if (kintaiData.getStart() != null)
-            return kintaiData.getStart().toString();
-        else
+        if (kintaiData.getStart() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getStart().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -384,11 +390,14 @@ public class KintaiBean implements Serializable {
     */
     public String getViewEnd(KintaiData kintaiData) {
         
-        //return (kintaiData.isDbFlag()) ? kintaiData.getEnd().toString() : "";
-        if (kintaiData.getEnd() != null)
-            return kintaiData.getEnd().toString();
-        else
+        if (kintaiData.getEnd() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getEnd().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -398,10 +407,14 @@ public class KintaiBean implements Serializable {
     */
     public String getViewTotal(KintaiData kintaiData) {
         
-        if (kintaiData.getTotal() != null)
-            return kintaiData.getTotal().toString();
-        else
+        if (kintaiData.getTotal() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getTotal().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -411,10 +424,14 @@ public class KintaiBean implements Serializable {
     */
     public String getViewRest(KintaiData kintaiData) {
         
-        if (kintaiData.getRest() != null)
-            return kintaiData.getRest().toString();
-        else
+        if (kintaiData.getRest() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getRest().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -424,10 +441,14 @@ public class KintaiBean implements Serializable {
     */
     public String getViewOver(KintaiData kintaiData) {
         
-        if (kintaiData.getOver() != null)
-            return kintaiData.getOver().toString();
-        else
+        if (kintaiData.getOver() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getOver().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -437,10 +458,14 @@ public class KintaiBean implements Serializable {
     */
     public String getViewReal(KintaiData kintaiData) {
         
-        if (kintaiData.getReal() != null)
-            return kintaiData.getReal().toString();
-        else
+        if (kintaiData.getReal() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getReal().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -450,10 +475,14 @@ public class KintaiBean implements Serializable {
     */
     public String getViewLate(KintaiData kintaiData) {
         
-        if (kintaiData.getLate() != null)
-            return kintaiData.getLate().toString();
-        else
+        if (kintaiData.getLate() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getLate().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
@@ -463,10 +492,14 @@ public class KintaiBean implements Serializable {
     */
     public String getViewLeave(KintaiData kintaiData) {
         
-        if (kintaiData.getLeave() != null)
-            return kintaiData.getLeave().toString();
-        else
+        if (kintaiData.getLeave() != null) {
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm");
+            String sTime = fmt.format(kintaiData.getLeave().getTime());
+            return sTime;
+        }
+        else {
             return "";
+        }
     }
     
     /*
