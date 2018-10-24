@@ -41,6 +41,7 @@ public class LoginBean {
 
     
     public LoginBean() {
+        
         userTC = new UserTableController();
     }
     
