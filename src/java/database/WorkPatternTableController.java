@@ -18,7 +18,7 @@ import util.Log;
  *
  * @author 佐藤孝史
  */
-public class WorkingPatternTableController {
+public class WorkPatternTableController {
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
@@ -31,7 +31,7 @@ public class WorkingPatternTableController {
         try {
             
             // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM workingPattern WHERE ptn_cd = ?");
+            stmt = connection.prepareStatement("SELECT * FROM work_pattern WHERE ptn_cd = ?");
             stmt.setInt(1, workPtn_cd);
             rs = stmt.executeQuery();
 

@@ -10,7 +10,7 @@ import data.KintaiData;
 import data.UserData;
 import database.AttendanceTableController;
 import database.DBController;
-import database.WorkingPatternTableController;
+import database.WorkPatternTableController;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -44,7 +44,7 @@ public class DakokuBean {
     private KintaiData kintaiData = null;
     
     private AttendanceTableController attendanceTC = null;
-    private WorkingPatternTableController workinpatternTC = null;
+    private WorkPatternTableController workinpatternTC = null;
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
@@ -74,7 +74,7 @@ public class DakokuBean {
     @PostConstruct
     public void init() {
         attendanceTC = new AttendanceTableController();
-        workinpatternTC = new WorkingPatternTableController();
+        workinpatternTC = new WorkPatternTableController();
         
         // 現在の時刻を保存
         Calendar c = new GregorianCalendar();

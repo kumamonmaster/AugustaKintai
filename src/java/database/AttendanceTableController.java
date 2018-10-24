@@ -44,7 +44,7 @@ public class AttendanceTableController {
                                 rs.getTime("start_time"), rs.getTime("end_time"), 
                                 rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
                                 rs.getTime("real_time"), rs.getInt("kbn_cd"), "",
-                                rs.getInt("workPtn_cd"), rs.getTime("late_time"), rs.getTime("leave_time"),
+                                rs.getInt("workptn_cd"), rs.getTime("late_time"), rs.getTime("leave_time"),
                                 rs.getString("remarks"));
                 
             }
@@ -97,7 +97,7 @@ public class AttendanceTableController {
                                 rs.getTime("start_time"), rs.getTime("end_time"), 
                                 rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
                                 rs.getTime("real_time"), rs.getInt("kbn_cd"), "",
-                                rs.getInt("workPtn_cd"), rs.getTime("late_time"), rs.getTime("leave_time"),
+                                rs.getInt("workptn_cd"), rs.getTime("late_time"), rs.getTime("leave_time"),
                                 rs.getString("remarks"));
             }
         
@@ -135,7 +135,7 @@ public class AttendanceTableController {
         try {
             
             // attendanceテーブルに入力データをセット
-            stmt = connection.prepareStatement("REPLACE INTO attendance (ym,user_id,day,start_time,end_time,rest_time,total_time,real_time,over_time,kbn_cd,workPtn_cd,late_time,leave_time,remarks) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            stmt = connection.prepareStatement("REPLACE INTO attendance (ym,user_id,day,start_time,end_time,rest_time,total_time,real_time,over_time,late_time,leave_time,remarks,kbn_cd,workptn_cd) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             stmt.setInt(1, kintaiData.getYm());
             stmt.setString(2, userData.getId());
             stmt.setInt(3, kintaiData.getDay());
@@ -145,11 +145,11 @@ public class AttendanceTableController {
             stmt.setTime(7, kintaiData.getTotal());
             stmt.setTime(8, kintaiData.getReal());
             stmt.setTime(9, kintaiData.getOver());
-            stmt.setInt(10, kintaiData.getKbnCd());
-            stmt.setInt(11, userData.getWorkptn_cd());
-            stmt.setTime(12, kintaiData.getLate());
-            stmt.setTime(13, kintaiData.getLeave());
-            stmt.setString(14, kintaiData.getRemarks());
+            stmt.setTime(10, kintaiData.getLate());
+            stmt.setTime(11, kintaiData.getLeave());
+            stmt.setString(12, kintaiData.getRemarks());
+            stmt.setInt(13, kintaiData.getKbnCd());
+            stmt.setInt(14, userData.getWorkptn_cd());
             
             stmt.executeQuery();
         
