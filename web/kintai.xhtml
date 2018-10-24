@@ -7,16 +7,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"/>
         <title>勤怠管理システム</title>
-        
-        <h:form>
-            <h:commandButton value="打刻" action="#{kintaiBean.goDakokuPage()}"/>
-            <h:commandButton value="日付" action="#{kintaiBean.goKintaiPage()}"/>
             <h:commandButton value="ログアウト" action="#{logoutBean.logout()}"/>
-        </h:form>
     </h:head>
     <h:body>
-        <nav class="navbar navbar-light bg-light">
-            <span class="navbar-brand mb-0 h1">オーガスタ勤怠システム</span>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+            <div class="container">
+                <div class="navbar-header">
+                    <span class="navbar-brand">勤怠管理</span>
+                </div>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="dakoku.xhtml">打刻</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="kintai.xhtml">日次勤怠</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
         <div class="container" style="padding-top: 30px">
             <div class="row">
@@ -111,17 +120,34 @@
                     </h:column>
                 </h:dataTable>
             </h:form>
+            <h2>勤務時間</h2>
+            <table class="table table-bordered table-sm col-sm-4">
+                <tr>
+                    <th class="table-active">総労働時間合計</th>
+                    <td>#{kintaiBean.viewSumTotal}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">残業時間合計</th>
+                    <td>#{kintaiBean.viewSumOver}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">実労働時間時間合計</th>
+                    <td>#{kintaiBean.viewSumReal}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">遅刻時間合計</th>
+                    <td>#{kintaiBean.viewSumLate}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">早退時間合計</th>
+                    <td>#{kintaiBean.viewSumLeave}</td>
+                </tr>
+            </table>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    
-        <p>総労働時間合計     #{kintaiBean.viewSumTotal}</p>
-        <p>残業時間合計       #{kintaiBean.viewSumOver}</p>
-        <p>実労働時間時間合計 #{kintaiBean.viewSumReal}</p>
-        <p>遅刻時間合計       #{kintaiBean.viewSumLate}</p>
-        <p>早退時間合計       #{kintaiBean.viewSumLeave}</p>
     </h:body>
 </html>
 
