@@ -177,8 +177,9 @@ public class EditBean {
             connection = DBController.open();
             
             // 入力値を勤怠データに書込
-            kintaiDataCalculation();
             kintaiDataDisabled();
+            kintaiDataCalculation();
+            //kintaiDataDisabled();
             attendanceTC.setTableUseEditDakoku(connection, this.kintaiData, this.userData);
             
         } catch (SQLException ex) {
@@ -248,21 +249,43 @@ public class EditBean {
     */
     private void kintaiDataDisabled() {
         
-        // 入力ロックフラグ
+//        // 入力ロックフラグ
+//        if (disabled) {
+//            
+//            // 出退勤、休憩、残業、遅刻早退を0に
+//            kintaiData.setStart(kintaiData.getStart_default());
+//            kintaiData.setEnd(kintaiData.getEnd_default());
+//            kintaiData.setRest(new Time(Time.valueOf("00:00:00").getTime()));
+//            kintaiData.setOver(new Time(Time.valueOf("00:00:00").getTime()));
+//            kintaiData.setLate(new Time(Time.valueOf("00:00:00").getTime()));
+//            kintaiData.setLeave(new Time(Time.valueOf("00:00:00").getTime()));
+//            
+//            // 有休でない場合は総労働、実労働も0に
+//            if (kintaiData.getKbnCd() != 4){
+//                kintaiData.setStart(null);
+//                kintaiData.setEnd(null);
+//                kintaiData.setTotal(new Time(Time.valueOf("00:00:00").getTime()));
+//                kintaiData.setReal(new Time(Time.valueOf("00:00:00").getTime()));
+//            }
+//        }
+// 入力ロックフラグ
         if (disabled) {
             
             // 出退勤、休憩、残業、遅刻早退を0に
-            kintaiData.setStart(new Time(Time.valueOf("00:00:00").getTime()));
-            kintaiData.setEnd(new Time(Time.valueOf("00:00:00").getTime()));
-            kintaiData.setRest(new Time(Time.valueOf("00:00:00").getTime()));
-            kintaiData.setOver(new Time(Time.valueOf("00:00:00").getTime()));
-            kintaiData.setLate(new Time(Time.valueOf("00:00:00").getTime()));
-            kintaiData.setLeave(new Time(Time.valueOf("00:00:00").getTime()));
+            kintaiData.setStart(kintaiData.getStart_default());
+            kintaiData.setEnd(kintaiData.getEnd_default());
+            kintaiData.setRest(new Time(Time.valueOf("01:00:00").getTime()));
             
             // 有休でない場合は総労働、実労働も0に
             if (kintaiData.getKbnCd() != 4){
+                kintaiData.setStart(null);
+                kintaiData.setEnd(null);
                 kintaiData.setTotal(new Time(Time.valueOf("00:00:00").getTime()));
+                kintaiData.setRest(new Time(Time.valueOf("00:00:00").getTime()));
+                kintaiData.setOver(new Time(Time.valueOf("00:00:00").getTime()));
                 kintaiData.setReal(new Time(Time.valueOf("00:00:00").getTime()));
+                kintaiData.setLate(new Time(Time.valueOf("00:00:00").getTime()));
+                kintaiData.setLeave(new Time(Time.valueOf("00:00:00").getTime()));
             }
         }
     }
