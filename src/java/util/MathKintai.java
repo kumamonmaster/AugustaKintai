@@ -28,9 +28,12 @@ public class MathKintai {
         LocalTime total;
 
         total = end.toLocalTime().minusHours(start.toLocalTime().get(ChronoField.HOUR_OF_DAY));
-        total = total.minusHours(rest.toLocalTime().get(ChronoField.HOUR_OF_DAY));
         total = total.minusMinutes(start.toLocalTime().get(ChronoField.MINUTE_OF_HOUR));
-        total = total.minusMinutes(rest.toLocalTime().get(ChronoField.MINUTE_OF_HOUR));
+        
+        if (total.compareTo(LocalTime.of(1, 0)) > 0) {
+            total = total.minusHours(rest.toLocalTime().get(ChronoField.HOUR_OF_DAY));
+            total = total.minusMinutes(rest.toLocalTime().get(ChronoField.MINUTE_OF_HOUR));
+        }
         
         return Time.valueOf(total.toString()+":00");
     }
@@ -84,46 +87,22 @@ public class MathKintai {
     
     public static Time resultLate(Time start, Time start_default) {
         
-        int hhStart = Integer.parseInt(start.toString().substring(0, 2));
-        int mmStart = Integer.parseInt(start.toString().substring(3, 5));
-        int hhStart_default = Integer.parseInt(start_default.toString().substring(0, 2));
-        int mmStart_default = Integer.parseInt(start_default.toString().substring(3, 5));
+        LocalTime late = null;
+
+        late = start.toLocalTime().minusHours(start_default.toLocalTime().getHour());
+        late = late.minusMinutes(start_default.toLocalTime().getMinute());
         
-        int mStart = (hhStart*60+mmStart);
-        int mStart_default = (hhStart_default*60+mmStart_default);
-        
-        Time late = null;
-        if (mStart_default < mStart) {
-            int hh = (mStart - mStart_default) / 60;
-            int mm = (mStart - mStart_default) % 60;
-            late = new Time(Time.valueOf(String.valueOf(hh)+":"+String.valueOf(mm)+":00").getTime());
-        } else {
-            late = new Time(Time.valueOf("00:00:00").getTime());
-        }
-        
-        return late;
+        return Time.valueOf(late.toString() + ":00");
     }
     
     public static Time resultLeave(Time end, Time end_default) {
         
-        int hhEnd = Integer.parseInt(end.toString().substring(0, 2));
-        int mmEnd = Integer.parseInt(end.toString().substring(3, 5));
-        int hhEnd_default = Integer.parseInt(end_default.toString().substring(0, 2));
-        int mmEnd_default = Integer.parseInt(end_default.toString().substring(3, 5));
+        LocalTime leave = null;
+
+        leave = end_default.toLocalTime().minusHours(end.toLocalTime().getHour());
+        leave = leave.minusMinutes(end.toLocalTime().getMinute());
         
-        int mEnd = (hhEnd*60+mmEnd);
-        int mEnd_default = (hhEnd_default*60+mmEnd_default);
-        
-        Time leave = null;
-        if (mEnd_default > mEnd) {
-            int hh = (mEnd_default - mEnd) / 60;
-            int mm = (mEnd_default - mEnd) % 60;
-            leave = new Time(Time.valueOf(String.valueOf(hh)+":"+String.valueOf(mm)+":00").getTime());
-        } else {
-            leave = new Time(Time.valueOf("00:00:00").getTime());
-        }
-        
-        return leave;
+        return Time.valueOf(leave.toString() + ":00");
     }
     
     public static double resultSumTotal(ArrayList<KintaiData> kintaiDataList) {
