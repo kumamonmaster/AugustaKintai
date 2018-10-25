@@ -6,43 +6,49 @@
 package database;
 
 import data.KintaiData;
+import data.UserData;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.model.SelectItem;
 import util.Log;
 
 /**
  *
  * @author 佐藤孝史
  */
-public class KbnTableController {
+public class KintaiBeanDataAccess {
+    
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
-    
-    public void getTableUseEditInput(Connection connection, ArrayList<SelectItem> kbnTable) throws SQLException {
-        
+    public void getAttendanceData(Connection connection, int yearMonth, UserData userData, ArrayList<KintaiData> dataList) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String kbnName = null;
         
         try {
             
-            // kbnテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM kbn");
+            // attendanceテーブルからデータを取得
+            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
+            stmt.setInt(1, yearMonth);
+            stmt.setString(2, userData.getId());
             rs = stmt.executeQuery();
 
             // 今まで登録されているデータを取得し設定
             while (rs.next()) {
                 
-                kbnTable.add(new SelectItem(rs.getInt("kbn_cd"),rs.getString("name")));
+                dataList.get(rs.getInt("day")-1).setData(
+                                rs.getTime("start_time"), rs.getTime("end_time"), 
+                                rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
+                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "",
+                                rs.getInt("workptn_cd"), rs.getTime("late_time"), rs.getTime("leave_time"),
+                                rs.getString("remarks"));
+                
             }
-        
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
             ex.printStackTrace();
@@ -70,25 +76,30 @@ public class KbnTableController {
         }
     }
     
-    public void getTableUseKintai(Connection connection, int kbn_cd, KintaiData kintaiData) throws SQLException {
+    public void getWorkPatternData(Connection connection, int workPtn_cd, Time start, Time end) throws SQLException {
         
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
-            // 区分テーブルからデータ取得
-            stmt = connection.prepareStatement("SELECT * FROM kbn WHERE kbn_cd = ?");
-            stmt.setInt(1, kbn_cd);
+            
+            // userテーブルからデータを取得
+            stmt = connection.prepareStatement("SELECT * FROM work_pattern WHERE ptn_cd = ?");
+            stmt.setInt(1, workPtn_cd);
             rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                kintaiData.setKbnName(rs.getString("name"));
+            // パスワード一致していたらページ遷移
+            if( rs.next() ) {
+                
+                start = rs.getTime("start_time");
+                end = rs.getTime("end_time");
             }
+        
         } catch (SQLException ex) {
-            LOG.log(Level.SEVERE, "区分テーブルでエラーです");
-            ex.printStackTrace();
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
             throw new SQLException();
         } finally {
+            
             // クローズ
             try {
                 if (rs != null)

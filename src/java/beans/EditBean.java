@@ -6,12 +6,12 @@
 package beans;
 
 import data.EditInputTable;
+import data.KbnData;
 import data.KintaiData;
 import data.KintaiKey;
 import data.UserData;
-import database.AttendanceTableController;
 import database.DBController;
-import database.WorkPatternTableController;
+import database.EditBeanDataAccess;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -41,12 +41,13 @@ public class EditBean {
     private KintaiKey kintaiKey;
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+    @ManagedProperty(value="#{kbnData}")
+    private KbnData kbnData;
     @ManagedProperty(value="#{editInputTable}")
     private EditInputTable editInputTable;
     
-    // データベースのテーブルコントローラー
-    private AttendanceTableController attendanceTC = null;
-    private WorkPatternTableController workingpatternTC = null;
+    // データベースへのアクセスクラス
+    private EditBeanDataAccess editBeanDA = null;
     
     // 勤怠データ
     private KintaiData kintaiData = null;
@@ -69,8 +70,7 @@ public class EditBean {
     */
     @PostConstruct
     public void init() {
-        attendanceTC = new AttendanceTableController();
-        workingpatternTC = new WorkPatternTableController();
+        editBeanDA = new EditBeanDataAccess();
         
         try {
             // 勤怠データ初期化
@@ -111,7 +111,7 @@ public class EditBean {
             connection = DBController.open();
             
             // 勤怠データの初期値をユーザーの勤務パターンに合わせる
-            workingpatternTC.getTableUseEdit(connection, userData.getWorkptn_cd(), kintaiData);
+            editBeanDA.getWorkPatternData(connection, userData.getWorkptn_cd(), kintaiData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
@@ -142,7 +142,7 @@ public class EditBean {
             connection = DBController.open();
             
             // キーが一致する勤怠データを読込
-            attendanceTC.getTableUseEdit(connection, this.kintaiKey.getYm(), this.kintaiKey.getUserId(), this.kintaiKey.getDay(), kintaiData);
+            editBeanDA.getAttendanceData(connection, this.kintaiKey.getYm(), this.kintaiKey.getUserId(), this.kintaiKey.getDay(), kintaiData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -176,8 +176,7 @@ public class EditBean {
             // 入力値を勤怠データに書込
             kintaiDataDisabled();
             kintaiDataCalculation();
-            //kintaiDataDisabled();
-            attendanceTC.setTableUseEditDakoku(connection, this.kintaiData, this.userData);
+            editBeanDA.setAttendanceData(connection, this.kintaiData, this.userData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -203,11 +202,13 @@ public class EditBean {
     */
     private void kintaiDataCalculation() {
         
+        String kbnName = kbnData.getKbnList().get(kintaiData.getKbnCd());
+        
         // すべての入力値が0になる場合（特別休暇、公休、代休、欠勤）
-        if (kintaiData.getKbnCd() == 2 ||
-                kintaiData.getKbnCd() == 3 ||
-                kintaiData.getKbnCd() == 7 ||
-                kintaiData.getKbnCd() == 8)
+        if (kbnName.equals("夏季休暇") ||
+                kbnName.equals("冬季休暇") ||
+                kbnName.equals("代休") ||
+                kbnName.equals("欠勤"))
             return;
         
         // nullチェック
@@ -255,7 +256,7 @@ public class EditBean {
             kintaiData.setRest(new Time(Time.valueOf("01:00:00").getTime()));
             
             // 有休でない場合は総労働、実労働も0に
-            if (kintaiData.getKbnCd() != 4){
+            if (!kbnData.getKbnList().get(kintaiData.getKbnCd()).equals("有休")){
                 kintaiData.setStart(null);
                 kintaiData.setEnd(null);
                 kintaiData.setTotal(new Time(Time.valueOf("00:00:00").getTime()));
@@ -350,6 +351,10 @@ public class EditBean {
 
     public void setUserData(UserData userData) {
         this.userData = userData;
+    }
+
+    public void setKbnData(KbnData kbnData) {
+        this.kbnData = kbnData;
     }
     
     public void setKintaiKey(KintaiKey kintaiKey) {
@@ -467,12 +472,14 @@ public class EditBean {
 
     public boolean isDisabled() {
         
-        int cd = kintaiData.getKbnCd();
+        String kbnName = kbnData.getKbnList().get(kintaiData.getKbnCd());
         
         // 区分をチェックして入力が必要な項目かを返す
-        if (cd != 1 &&
-                cd != 5 &&
-                cd != 6) {
+        if (kbnName.equals("夏季休暇") ||
+                kbnName.equals("冬季休暇") ||
+                kbnName.equals("有休") ||
+                kbnName.equals("代休") ||
+                kbnName.equals("欠勤")) {
             disabled = true;
         } else {
             disabled = false;

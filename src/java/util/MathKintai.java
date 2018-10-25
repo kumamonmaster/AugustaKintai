@@ -20,9 +20,6 @@ import java.util.ArrayList;
  */
 public class MathKintai {
     
-    private static final int HOUR = 0;
-    private static final int MINUTE = 1;
-    
     private static Time mathTotal(Time start, Time end, Time rest) {
         
         LocalTime total;

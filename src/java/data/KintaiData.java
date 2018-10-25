@@ -45,7 +45,7 @@ public class KintaiData {
         this.rest = null;
         this.over = null;
         this.real = null;
-        this.kbn_cd = 1;
+        this.kbn_cd = 0;
         this.kbnName = "";
         this.workPtn_cd = 1;
         this.late = null;

@@ -6,19 +6,19 @@
 package beans;
 
 import data.DakokuMessage;
+import data.KbnData;
 import data.KintaiData;
 import data.KintaiKey;
 import data.KintaiYearMonth;
 import data.UserData;
-import database.AttendanceTableController;
 import database.DBController;
-import database.KbnTableController;
-import database.WorkPatternTableController;
+import database.KintaiBeanDataAccess;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,6 +49,8 @@ public class KintaiBean implements Serializable {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+    @ManagedProperty(value="#{kbnData}")
+    private KbnData kbnData;
     @ManagedProperty(value="#{kintaiKey}")
     private KintaiKey kintaiKey;
     @ManagedProperty(value="#{kintaiYearMonth}")
@@ -57,9 +59,10 @@ public class KintaiBean implements Serializable {
     private DakokuMessage dakokuMessage;
     
     // データベースのテーブルコントローラー
-    private AttendanceTableController attendanceTC = null;
-    private KbnTableController kbnTC = null;
-    private WorkPatternTableController workingPatternTC = null;
+//    private AttendanceTableController attendanceTC = null;
+//    private KbnTableController kbnTC = null;
+//    private WorkPatternTableController workingPatternTC = null;
+    private KintaiBeanDataAccess kintaibeanDA = null;
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
@@ -80,9 +83,10 @@ public class KintaiBean implements Serializable {
     @PostConstruct
     public void init() {
         
-        attendanceTC = new AttendanceTableController();
-        kbnTC = new KbnTableController();
-        workingPatternTC = new WorkPatternTableController();
+//        attendanceTC = new AttendanceTableController();
+//        kbnTC = new KbnTableController();
+//        workingPatternTC = new WorkPatternTableController();
+        kintaibeanDA = new KintaiBeanDataAccess();
         
         // 打刻画面メッセージを初期化
         dakokuMessage.setResultMessage("");
@@ -163,16 +167,22 @@ public class KintaiBean implements Serializable {
             connection = DBController.open();
             
             // 勤務パターンを読込
+            Time start = null;
+            Time end = null;
+            kintaibeanDA.getWorkPatternData(connection, userData.getWorkptn_cd(), start, end);
             for (KintaiData kintaiData :kintaiDataList) {
-                workingPatternTC.getTableUseEdit(connection, userData.getWorkptn_cd(), kintaiData);
+                
+                kintaiData.setStart_default(start);
+                kintaiData.setEnd_default(end);
             }
         
             // 勤怠実績を読込
-            attendanceTC.getTableUseKintai(connection, Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), this.userData, kintaiDataList);
+            kintaibeanDA.getAttendanceData(connection, Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), this.userData, kintaiDataList);
             
             // 勤務区分を読込
             for (KintaiData kintaiData :kintaiDataList) {
-                kbnTC.getTableUseKintai(connection, kintaiData.getKbnCd(), kintaiData);
+                
+                kintaiData.setKbnName(kbnData.getKbnList().get(kintaiData.getKbnCd()));
             }
             
         } catch (SQLException ex) {
@@ -223,6 +233,10 @@ public class KintaiBean implements Serializable {
     public void setUserData(UserData userData) {
         
         this.userData = userData;
+    }
+
+    public void setKbnData(KbnData kbnData) {
+        this.kbnData = kbnData;
     }
 
     public void setKintaiKey(KintaiKey kintaiKey) {

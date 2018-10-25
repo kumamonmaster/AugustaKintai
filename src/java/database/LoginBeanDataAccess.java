@@ -10,20 +10,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.model.SelectItem;
 import util.Log;
 
 /**
  *
  * @author 佐藤孝史
  */
-public class UserTableController {
-    
+public class LoginBeanDataAccess {
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
-    public boolean selectOnly(Connection connection, UserData userData) throws SQLException {
+    public boolean getLoginUserData(Connection connection, UserData userData) throws SQLException {
         
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -75,5 +76,49 @@ public class UserTableController {
         }
         
         return false;
+    }
+    
+    public void getKbnData(Connection connection, ArrayList<String> kbnDataList) throws SQLException {
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            
+            // kbnテーブルからデータを取得
+            stmt = connection.prepareStatement("SELECT * FROM kbn");
+            rs = stmt.executeQuery();
+
+            // 今まで登録されているデータを取得し設定
+            while (rs.next()) {
+                
+                kbnDataList.add(rs.getString("name"));
+            }
+        
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
+            throw new SQLException();
+        } finally {
+            
+            // クローズ
+            try {
+                if (rs != null)
+                    rs.close();
+                rs = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+            
+            try {
+                if (stmt != null)
+                    stmt.close();
+                stmt = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+        }
     }
 }

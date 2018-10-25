@@ -6,11 +6,11 @@
 package beans;
 
 import data.DakokuMessage;
+import data.KbnData;
 import data.KintaiData;
 import data.UserData;
-import database.AttendanceTableController;
 import database.DBController;
-import database.WorkPatternTableController;
+import database.DakokuBeanDataAccess;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -38,13 +38,14 @@ public class DakokuBean {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+    @ManagedProperty(value="#{kbnData}")
+    private KbnData kbnData;
     @ManagedProperty(value="#{dakokuMessage}")
     private DakokuMessage dakokuMessage;
     
     private KintaiData kintaiData = null;
     
-    private AttendanceTableController attendanceTC = null;
-    private WorkPatternTableController workinpatternTC = null;
+    private DakokuBeanDataAccess dakokuBeanDA = null;
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
@@ -62,6 +63,10 @@ public class DakokuBean {
         this.userData = userData;
     }
 
+    public void setKbnData(KbnData kbnData) {
+        this.kbnData = kbnData;
+    }
+
     public void setDakokuMessage(DakokuMessage dakokuMessage) {
         this.dakokuMessage = dakokuMessage;
     }
@@ -73,8 +78,8 @@ public class DakokuBean {
     */
     @PostConstruct
     public void init() {
-        attendanceTC = new AttendanceTableController();
-        workinpatternTC = new WorkPatternTableController();
+        
+        dakokuBeanDA = new DakokuBeanDataAccess();
         
         // 現在の時刻を保存
         Calendar c = new GregorianCalendar();
@@ -125,7 +130,7 @@ public class DakokuBean {
             connection = DBController.open();
             
             // 勤怠データの初期値をユーザーの勤務パターンに合わせる
-            workinpatternTC.getTableUseEdit(connection, userData.getWorkptn_cd(), kintaiData);
+            dakokuBeanDA.getWorkPatternData(connection, userData.getWorkptn_cd(), kintaiData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
@@ -158,7 +163,7 @@ public class DakokuBean {
             connection = DBController.open();
             
             // 現在の年月、ユーザーID、日、でデータ検索
-            attendanceTC.getTableUseEdit(connection, kintaiData.getYm(), this.userData.getId(), kintaiData.getDay(), kintaiData);
+            dakokuBeanDA.getAttendanceData(connection, kintaiData.getYm(), this.userData.getId(), kintaiData.getDay(), kintaiData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -205,7 +210,7 @@ public class DakokuBean {
             connection = DBController.open();
             
             // 出勤時刻を勤怠データに書込
-            attendanceTC.setTableUseEditDakoku(connection, this.kintaiData, this.userData);
+            dakokuBeanDA.setAttendanceData(connection, kintaiData, userData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -224,7 +229,7 @@ public class DakokuBean {
         
         // 登録成功
         entrySuccess = true;
-        LocalTime localTime = entryTime.toLocalTime();
+        LocalTime localTime = workStart.toLocalTime();
         dakokuMessage.setResultMessage(String.valueOf(localTime.getHour()) + ":" + String.valueOf(localTime.getMinute()) + "に出勤いたしました。");
         
         return "dakoku.xhtml?faces-redirect=true";
@@ -317,7 +322,7 @@ public class DakokuBean {
             connection = DBController.open();
             
             // 入力値を勤怠データに書込
-            attendanceTC.setTableUseEditDakoku(connection, this.kintaiData, this.userData);
+            dakokuBeanDA.setAttendanceData(connection, kintaiData, userData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
