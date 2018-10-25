@@ -5,6 +5,7 @@
  */
 package beans;
 
+import data.EditInputTable;
 import data.KintaiData;
 import data.KintaiKey;
 import data.UserData;
@@ -14,12 +15,15 @@ import database.WorkPatternTableController;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.model.SelectItem;
 import javax.naming.NamingException;
 import util.Log;
 import util.MathKintai;
@@ -37,6 +41,8 @@ public class EditBean {
     private KintaiKey kintaiKey;
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+    @ManagedProperty(value="#{editInputTable}")
+    private EditInputTable editInputTable;
     
     // データベースのテーブルコントローラー
     private AttendanceTableController attendanceTC = null;
@@ -240,26 +246,7 @@ public class EditBean {
     */
     private void kintaiDataDisabled() {
         
-//        // 入力ロックフラグ
-//        if (disabled) {
-//            
-//            // 出退勤、休憩、残業、遅刻早退を0に
-//            kintaiData.setStart(kintaiData.getStart_default());
-//            kintaiData.setEnd(kintaiData.getEnd_default());
-//            kintaiData.setRest(new Time(Time.valueOf("00:00:00").getTime()));
-//            kintaiData.setOver(new Time(Time.valueOf("00:00:00").getTime()));
-//            kintaiData.setLate(new Time(Time.valueOf("00:00:00").getTime()));
-//            kintaiData.setLeave(new Time(Time.valueOf("00:00:00").getTime()));
-//            
-//            // 有休でない場合は総労働、実労働も0に
-//            if (kintaiData.getKbnCd() != 4){
-//                kintaiData.setStart(null);
-//                kintaiData.setEnd(null);
-//                kintaiData.setTotal(new Time(Time.valueOf("00:00:00").getTime()));
-//                kintaiData.setReal(new Time(Time.valueOf("00:00:00").getTime()));
-//            }
-//        }
-// 入力ロックフラグ
+        // 入力ロックフラグ
         if (disabled) {
             
             // 出退勤、休憩、残業、遅刻早退を0に
@@ -376,6 +363,107 @@ public class EditBean {
     public void setKintaiData(KintaiData kintaiData) {
         this.kintaiData = kintaiData;
     }
+    
+    public ArrayList<SelectItem> getViewKbnTable() {
+        
+        return editInputTable.getKbnTable();
+    }
+    
+    public ArrayList<SelectItem> getViewStartTable() {
+        
+        ArrayList<SelectItem> itemList = new ArrayList<SelectItem>();
+        String sTime =  null;
+        
+        // 退勤時間がnullか nullならデフォルト時間を指定
+        if (kintaiData.getEnd() != null)
+            sTime =  kintaiData.getEnd().toLocalTime().toString() + ":00";
+        else
+            sTime = kintaiData.getEnd_default().toLocalTime().toString() + ":00";
+        
+        for (SelectItem item: editInputTable.getTimeTable()) {
+            
+            // テーブルの値と退勤時間が一致していれば抜ける（出勤の入力は退勤時間を超えない）
+            if (item.getValue().equals(sTime)) {
+                break;
+            }
+            
+            // アイテムリストに追加
+            itemList.add(new SelectItem(item.getValue(), item.getLabel()));
+        }
+        
+        return itemList;
+    }
+    
+    public ArrayList<SelectItem> getViewEndTable() {
+        
+        ArrayList<SelectItem> itemList = new ArrayList<SelectItem>();
+        LocalTime startLocalTime = null;
+        
+        // 出勤時間がnullか nullならデフォルト時間を指定
+        if (kintaiData.getStart() != null)
+            startLocalTime = kintaiData.getStart().toLocalTime();
+        else
+            startLocalTime = kintaiData.getStart_default().toLocalTime();
+        
+        for (SelectItem item: editInputTable.getTimeTable()) {
+            
+            Time time = Time.valueOf(item.getValue().toString());
+            
+            // 出勤時間より後を設定（退勤の入力は出勤時間を必ず超える）
+            if (time.toLocalTime().compareTo(startLocalTime) > 0) {
+                itemList.add(new SelectItem(item.getValue(), item.getLabel()));
+            }
+        }
+        
+        return itemList;
+    }
+    
+    public ArrayList<SelectItem> getViewRestTable() {
+        
+        ArrayList<SelectItem> itemList = new ArrayList<SelectItem>();
+        
+        LocalTime startLocalTime = null;
+        LocalTime endLocalTime = null;
+        LocalTime restLocalTime = null;
+        
+        // 出退勤時間がnullか nullならデフォルト時間を設定
+        if (kintaiData.getStart() != null && kintaiData.getEnd() != null) {
+            startLocalTime = kintaiData.getStart().toLocalTime();
+            endLocalTime = kintaiData.getEnd().toLocalTime();
+        } else {
+            startLocalTime = kintaiData.getStart_default().toLocalTime();
+            endLocalTime = kintaiData.getEnd_default().toLocalTime();
+        }
+        
+        // 退勤時間から出勤時間を引いた値が設定可能休憩時間
+        restLocalTime = endLocalTime.minusHours(startLocalTime.getHour());
+        restLocalTime = restLocalTime.minusMinutes(startLocalTime.getMinute());
+        
+        for (SelectItem item: editInputTable.getTimeTable()) {
+            
+            Time time = Time.valueOf(item.getValue().toString());
+            
+            // 設定された休憩時間までのリスト作成
+            if (time.toLocalTime().compareTo(restLocalTime) < 0) {
+                itemList.add(new SelectItem(item.getValue(), item.getLabel()));
+            } else {
+                break;
+            }
+        }
+        
+        return itemList;
+    }
+    
+    public EditInputTable getEditInputTable() {
+        
+        return editInputTable;
+    }
+    
+    public void setEditInputTable(EditInputTable editInputTable) {
+        
+        this.editInputTable = editInputTable;
+    }
+    
 
     public boolean isDisabled() {
         

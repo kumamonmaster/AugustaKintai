@@ -7,17 +7,17 @@ package data;
 
 import database.DBController;
 import database.KbnTableController;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 import javax.naming.NamingException;
 import util.Log;
@@ -27,8 +27,8 @@ import util.Log;
  * @author 佐藤孝史
  */
 @ManagedBean
-@RequestScoped
-public class EditInputTable {
+@SessionScoped
+public class EditInputTable implements Serializable {
     
     private KbnTableController ktc = null;
     
