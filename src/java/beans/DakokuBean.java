@@ -389,7 +389,7 @@ public class DakokuBean {
         
         LocalTime localTime = entryTime.toLocalTime();
         
-        return String.valueOf(localTime.getHour()) + ":" + String.valueOf(localTime.getMinute());
+        return localTime.toString();
     }
 
     public String getViewResultMessage() {
