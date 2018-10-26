@@ -71,6 +71,10 @@ public class KintaiBean implements Serializable {
     private ArrayList<KintaiData> kintaiDataList = null;
     // 選択月度リスト
     private ArrayList<SelectItem> yearMonthList = null;
+    // 今月度有休取得日数
+    private double yukyuDays = 0.0;
+    // 有休残数
+    private double yukyuRemainingDay = 0.0;
     
     
 
@@ -185,6 +189,9 @@ public class KintaiBean implements Serializable {
                 kintaiData.setKbnName(kbnData.getKbnList().get(kintaiData.getKbnCd()));
             }
             
+            yukyuDays = kintaibeanDA.getYukyuMonthData(connection, Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), userData, kbnData);
+            yukyuRemainingDay = kintaibeanDA.getYukyuRemainingData(connection, userData);
+                    
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new SQLException();
@@ -561,13 +568,33 @@ public class KintaiBean implements Serializable {
     }
     
     /*
-    getViewLeaveSum
+    getViewSumLeave
     戻り値：String
     備考
     */
     public String getViewSumLeave() {
         
         return String.valueOf(MathKintai.resultSumLeave(kintaiDataList));
+    }
+    
+    /*
+    getViewSumLeave
+    戻り値：String
+    備考
+    */
+    public double getViewSumYukyu() {
+        
+        return yukyuDays;
+    }
+    
+    /*
+    getViewSumLeave
+    戻り値：String
+    備考
+    */
+    public double getViewRemainingYukyu() {
+        
+        return yukyuRemainingDay;
     }
     /**************************************************************/
     

@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.model.SelectItem;
 import util.Log;
 
 /**
@@ -39,9 +38,8 @@ public class LoginBeanDataAccess {
             // パスワード一致していたらページ遷移
             if( rs.next() ) {
                 if (userData.getPassword().equals(rs.getString("password"))) {
+                    
                     // ユーザーデータを作成
-                    //this.userData.setId(rs.getString("id"));
-                    //userData = new UserData(rs.getString("id"),rs.getString("name"),this.address);
                     userData.setId(rs.getString("user_id"));
                     userData.setName(rs.getString("name"));
                     userData.setWorkptn_cd(rs.getInt("workptn_cd"));

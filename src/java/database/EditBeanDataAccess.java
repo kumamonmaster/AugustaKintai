@@ -5,6 +5,7 @@
  */
 package database;
 
+import data.KbnData;
 import data.KintaiData;
 import data.UserData;
 import java.sql.Connection;
@@ -14,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.bean.ManagedProperty;
 import util.Log;
 
 /**
@@ -22,8 +24,10 @@ import util.Log;
  */
 public class EditBeanDataAccess {
     
+    
     // ログ生成
     private static final Logger LOG = Log.getLog();
+    
     
     public void getWorkPatternData(Connection connection, int workPtn_cd, KintaiData kintaiData) throws SQLException {
         
@@ -145,7 +149,7 @@ public class EditBeanDataAccess {
             stmt.setInt(13, kintaiData.getKbnCd());
             stmt.setInt(14, userData.getWorkptn_cd());
             
-            stmt.executeQuery();
+            stmt.executeUpdate();
         
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
@@ -154,6 +158,48 @@ public class EditBeanDataAccess {
         } finally {
             
             // クローズ
+            
+            try {
+                if (stmt != null)
+                    stmt.close();
+                stmt = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    public void setYukyuData(Connection connection, UserData userData, double yukyuAddDay) throws SQLException {
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        double addYukyu = 0.0;
+        
+        try {
+            
+            // attendanceテーブルに入力データをセット
+            stmt = connection.prepareStatement("UPDATE yukyu SET remaining_day = remaining_day+? WHERE user_id = ?");
+            stmt.setDouble(1, yukyuAddDay);
+            stmt.setString(2, userData.getId());
+            
+            stmt.executeUpdate();
+        
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
+            throw new SQLException();
+        } finally {
+            
+            // クローズ
+            try {
+                if (rs != null)
+                    rs.close();
+                rs = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
+            }
             
             try {
                 if (stmt != null)

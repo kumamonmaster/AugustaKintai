@@ -5,6 +5,7 @@
  */
 package database;
 
+import data.KbnData;
 import data.KintaiData;
 import data.UserData;
 import java.sql.Connection;
@@ -97,6 +98,105 @@ public class KintaiBeanDataAccess {
         
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
+            throw new SQLException();
+        } finally {
+            
+            // クローズ
+            try {
+                if (rs != null)
+                    rs.close();
+                rs = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+            
+            try {
+                if (stmt != null)
+                    stmt.close();
+                stmt = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    public double getYukyuMonthData(Connection connection, int ym, UserData userData, KbnData kbnData) throws SQLException {
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        double yukyuDays = 0;
+        
+        try {
+            
+            // userテーブルからデータを取得
+            stmt = connection.prepareStatement("SELECT kbn_cd FROM attendance WHERE ym = ? AND user_id = ? AND (kbn_cd = (SELECT kbn_cd FROM kbn WHERE name = \"有休\") OR kbn_cd = (SELECT kbn_cd FROM kbn WHERE name = \"午前有休\") OR kbn_cd = (SELECT kbn_cd FROM kbn WHERE name = \"午後有休\"))");
+            stmt.setInt(1, ym);
+            stmt.setString(2, userData.getId());
+            rs = stmt.executeQuery();
+
+            // パスワード一致していたらページ遷移
+            while( rs.next() ) {
+                
+                if (kbnData.getKbnList().get(rs.getInt("kbn_cd")).equals("有休"))
+                    yukyuDays += 1;
+                else if (kbnData.getKbnList().get(rs.getInt("kbn_cd")).equals("午前有休") || kbnData.getKbnList().get(rs.getInt("kbn_cd")).equals("午後有休"))
+                    yukyuDays += 0.5;
+            }
+            
+            return yukyuDays;
+        
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
+            throw new SQLException();
+        } finally {
+            
+            // クローズ
+            try {
+                if (rs != null)
+                    rs.close();
+                rs = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+            
+            try {
+                if (stmt != null)
+                    stmt.close();
+                stmt = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    public double getYukyuRemainingData(Connection connection, UserData userData) throws SQLException {
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            
+            // userテーブルからデータを取得
+            stmt = connection.prepareStatement("SELECT remaining_day FROM yukyu WHERE user_id = ? ");
+            stmt.setString(1, userData.getId());
+            rs = stmt.executeQuery();
+
+            // パスワード一致していたらページ遷移
+            if( rs.next() ) {
+                
+                return rs.getDouble("remaining_day");
+            } else {
+                return 0.0;
+            }
+        
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
             throw new SQLException();
         } finally {
             

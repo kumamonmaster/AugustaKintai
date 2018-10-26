@@ -5,6 +5,7 @@
  */
 package util;
 
+import data.KbnData;
 import data.KintaiData;
 import java.sql.Time;
 import java.time.LocalTime;
@@ -54,26 +55,29 @@ public class MathKintai {
         return over;
     }
     
-    public static Time resultReal(Time start, Time end, Time start_default, Time end_default, Time rest, int kbn_cd) {
+    public static Time resultReal(Time start, Time end, Time start_default, Time end_default, Time rest, String kbnName) {
         
+        Time s = null;
         Time real = null;
         
         // 有休
-        if (kbn_cd == 4) {
+        if (kbnName.equals("有休")) {
             real = Time.valueOf(mathTotal(start, end, rest).toLocalTime().minusHours(8).toString()+":00");
-        } else if (kbn_cd == 5) {
+        } else if (kbnName.equals("午前有休")) {
             
             if (start.toLocalTime().compareTo(start_default.toLocalTime().plusHours(4)) < 0) {
-                real = mathTotal(start, end, rest);
-            } else {
+                // 早い
                 real = mathTotal(Time.valueOf(start_default.toLocalTime().plusHours(4)+":00"), end, rest);
+            } else {
+                real = mathTotal(start, end, rest);
             }
-        } else if (kbn_cd == 6) {
+        } else if (kbnName.equals("午後有休")) {
             
             if (end.toLocalTime().compareTo(end_default.toLocalTime().minusHours(4)) > 0) {
-                real = mathTotal(start, end, rest);
-            } else {
+                // 遅く
                 real = mathTotal(start, Time.valueOf(end_default.toLocalTime().minusHours(4)+":00"), rest);
+            } else {
+                real = mathTotal(start, end, rest);
             }
         } else {
             real = mathTotal(start, end, rest);
@@ -180,5 +184,24 @@ public class MathKintai {
         }
         
         return sumTime;
+    }
+    
+    public static double resultSumYukyu(KbnData kbnData, int oldKbn, int newKbn) {
+        
+        double yukyuAddDay = 0;
+        
+        // 有休チェック
+        if (kbnData.getKbnList().get(newKbn).equals("有休")) {
+            yukyuAddDay -= 1;
+        } else if (kbnData.getKbnList().get(newKbn).equals("午前有休") || kbnData.getKbnList().get(newKbn).equals("午後有休")) {
+            yukyuAddDay -= 0.5;
+        }
+        if (kbnData.getKbnList().get(oldKbn).equals("有休")) {
+            yukyuAddDay += 1;
+        } else if (kbnData.getKbnList().get(oldKbn).equals("午前有休") || kbnData.getKbnList().get(oldKbn).equals("午後有休")) {
+            yukyuAddDay += 0.5;
+        }
+        
+        return yukyuAddDay;
     }
 }

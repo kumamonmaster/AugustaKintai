@@ -54,9 +54,15 @@ public class EditBean {
     
     // 入力ロックフラグ
     private boolean disabled = false;
+    // 編集画面遷移時に持っている勤怠データの区分コード
+    private int baseKbnCd = 0;
+    // 有休フラグ
+    private double yukyuAddDay = 0;
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
+    
+    
 
     /**
      * Creates a new instance of EditBean
@@ -142,7 +148,9 @@ public class EditBean {
             connection = DBController.open();
             
             // キーが一致する勤怠データを読込
-            editBeanDA.getAttendanceData(connection, this.kintaiKey.getYm(), this.kintaiKey.getUserId(), this.kintaiKey.getDay(), kintaiData);
+            editBeanDA.getAttendanceData(connection, kintaiKey.getYm(), kintaiKey.getUserId(), kintaiKey.getDay(), kintaiData);
+            
+            baseKbnCd = kintaiData.getKbnCd();
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -176,7 +184,10 @@ public class EditBean {
             // 入力値を勤怠データに書込
             kintaiDataDisabled();
             kintaiDataCalculation();
-            editBeanDA.setAttendanceData(connection, this.kintaiData, this.userData);
+            
+            editBeanDA.setYukyuData(connection, userData, yukyuAddDay);
+            
+            editBeanDA.setAttendanceData(connection, kintaiData, userData);
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -221,7 +232,7 @@ public class EditBean {
             // 残業時間算出
             kintaiData.setOver(MathKintai.resultOver(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getRest()));
             // 実労働時間算出
-            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getStart_default(), kintaiData.getEnd_default(), kintaiData.getRest(), kintaiData.getKbnCd()));
+            kintaiData.setReal(MathKintai.resultReal(kintaiData.getStart(), kintaiData.getEnd(), kintaiData.getStart_default(), kintaiData.getEnd_default(), kintaiData.getRest(), kbnData.getKbnList().get(kintaiData.getKbnCd())));
         }
         
         // nullチェック
@@ -278,9 +289,38 @@ public class EditBean {
         return "kintai.xhtml?faces-redirect=true";
     }
     
+
+    public UserData getUserData() {
+        return userData;
+    }
+
+    public void setUserData(UserData userData) {
+        this.userData = userData;
+    }
+
+    public void setKbnData(KbnData kbnData) {
+        this.kbnData = kbnData;
+    }
+    
+    public void setKintaiKey(KintaiKey kintaiKey) {
+        this.kintaiKey = kintaiKey;
+    }
+
+    public KintaiData getKintaiData() {
+        return kintaiData;
+    }
+
+    public void setKintaiData(KintaiData kintaiData) {
+        this.kintaiData = kintaiData;
+    }
+    
     
     /********************** Viewが参照するメソッド ********************/
     public void setViewKbn(int kbnCd) {
+        
+        // 有休の加算減算
+        yukyuAddDay = MathKintai.resultSumYukyu(kbnData, baseKbnCd, kbnCd);
+        
         kintaiData.setKbnCd(kbnCd);
     }
     
@@ -342,31 +382,6 @@ public class EditBean {
             return kintaiData.getRemarks();
         else
             return "";
-    }
-    
-
-    public UserData getUserData() {
-        return userData;
-    }
-
-    public void setUserData(UserData userData) {
-        this.userData = userData;
-    }
-
-    public void setKbnData(KbnData kbnData) {
-        this.kbnData = kbnData;
-    }
-    
-    public void setKintaiKey(KintaiKey kintaiKey) {
-        this.kintaiKey = kintaiKey;
-    }
-
-    public KintaiData getKintaiData() {
-        return kintaiData;
-    }
-
-    public void setKintaiData(KintaiData kintaiData) {
-        this.kintaiData = kintaiData;
     }
     
     public ArrayList<SelectItem> getViewKbnTable() {
