@@ -239,6 +239,8 @@ public class EditBean {
         if (kintaiData.getStart() != null &&
                 kintaiData.getStart_default()!= null)
         {
+            if (kbnData.getKbnList().get(kintaiData.getKbnCd()).equals("午前有休"))
+                kintaiData.setStart_default(Time.valueOf(kintaiData.getStart_default().toLocalTime().plusHours(4).toString()+":00"));
             // 遅刻算出
             kintaiData.setLate(MathKintai.resultLate(kintaiData.getStart(), kintaiData.getStart_default()));
         }
@@ -247,6 +249,8 @@ public class EditBean {
         if (kintaiData.getEnd() != null &&
                 kintaiData.getEnd_default()!= null)
         {
+            if (kbnData.getKbnList().get(kintaiData.getKbnCd()).equals("午後有休"))
+                kintaiData.setEnd_default(Time.valueOf(kintaiData.getEnd_default().toLocalTime().minusHours(4).toString()+":00"));
             // 早退算出
             kintaiData.setLeave(MathKintai.resultLeave(kintaiData.getEnd(), kintaiData.getEnd_default()));
         }
