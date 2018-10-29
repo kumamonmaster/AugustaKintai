@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.application.ViewExpiredException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -34,6 +35,7 @@ import javax.faces.model.SelectItem;
 import javax.naming.NamingException;
 import util.Log;
 import util.MathKintai;
+import session.SessionTimeOutFilter;
 import util.Utility;
 
 /**
@@ -85,11 +87,8 @@ public class KintaiBean implements Serializable {
     kintaiDataListに日付を設定し、データベースに存在する勤怠データを一致する日付のkintaiDataListに設定
     */
     @PostConstruct
-    public void init() {
+    public void init() throws ViewExpiredException {
         
-//        attendanceTC = new AttendanceTableController();
-//        kbnTC = new KbnTableController();
-//        workingPatternTC = new WorkPatternTableController();
         kintaibeanDA = new KintaiBeanDataAccess();
         
         // 打刻画面メッセージを初期化
@@ -619,7 +618,6 @@ public class KintaiBean implements Serializable {
     打刻画面へページ遷移
     */
     public String goDakokuPage() {
-        
         return "dakoku.xhtml?faces-redirect=true";
     }
     
@@ -629,7 +627,6 @@ public class KintaiBean implements Serializable {
     勤怠画面へページ遷移
     */
     public String goKintaiPage() {
-        
         return "kintai.xhtml?faces-redirect=true";
     }
     /***************************************************************/

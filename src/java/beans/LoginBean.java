@@ -39,7 +39,6 @@ public class LoginBean {
     
     public LoginBean() {
         
-        loginbeanDA = new LoginBeanDataAccess();
     }
     
     public void setUserData(UserData userData) {
@@ -55,6 +54,7 @@ public class LoginBean {
         
         Connection connection = null;
         String nextPage = null;
+        loginbeanDA = new LoginBeanDataAccess();
         
         try {
             // データベース接続
