@@ -83,4 +83,33 @@ public class Utility {
         
         return Integer.parseInt(s);
     }
+    
+    public static int unionYearMonth(int y, int m) {
+        
+        String s = null;
+        
+        if (m < 10)
+            s = String.valueOf(y) + "0" + String.valueOf(m);
+        else
+            s = String.valueOf(y) + String.valueOf(m);
+        
+        return Integer.parseInt(s);
+    }
+    
+    public static int unionYearMonthDay(int y, int m, int d) {
+        
+        String s = null;
+        
+        if (m < 10)
+            s = String.valueOf(y) + "0" + String.valueOf(m);
+        else
+            s = String.valueOf(y) + String.valueOf(m);
+        
+        if (d < 10)
+            s += "0" + String.valueOf(d);
+        else
+            s += String.valueOf(d);
+        
+        return Integer.parseInt(s);
+    }
 }

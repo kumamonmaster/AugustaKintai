@@ -41,20 +41,14 @@ public class DBController {
         InitialContext context = null;
         
         try {
-            
-                //                context = new InitialContext();
-//                // lookupでデータソースオブジェクトを取得
-//                DataSource dataSource = (DataSource) context.lookup(jndi);
-//
-//                // データソースでコネクション取得
-//                connection = dataSource.getConnection();
                 try{
                     Class.forName("com.mysql.jdbc.Driver");
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(DBController.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
-                connection = DriverManager.getConnection("jdbc:mysql://augusta-kintai.cr8sxdwzy9ux.ap-northeast-1.rds.amazonaws.com:3306/augusta_kintai?useUnicode=true&characterEncoding=utf8", "admin", "augusta1234");
+                //connection = DriverManager.getConnection("jdbc:mysql://augusta-kintai.cr8sxdwzy9ux.ap-northeast-1.rds.amazonaws.com:3306/augusta_kintai?useUnicode=true&characterEncoding=utf8", "admin", "augusta1234");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/augustaKintai?useUnicode=true&characterEncoding=utf8", "TakafumiSato", "1234567");
                 
         } catch (SQLException ex) {
             

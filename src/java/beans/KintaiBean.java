@@ -6,19 +6,19 @@
 package beans;
 
 import data.DakokuMessage;
+import data.KbnData;
 import data.KintaiData;
 import data.KintaiKey;
 import data.KintaiYearMonth;
 import data.UserData;
-import database.AttendanceTableController;
 import database.DBController;
-import database.KbnTableController;
-import database.WorkPatternTableController;
+import database.KintaiBeanDataAccess;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.application.ViewExpiredException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -34,6 +35,7 @@ import javax.faces.model.SelectItem;
 import javax.naming.NamingException;
 import util.Log;
 import util.MathKintai;
+import session.SessionTimeOutFilter;
 import util.Utility;
 
 /**
@@ -49,6 +51,8 @@ public class KintaiBean implements Serializable {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+    @ManagedProperty(value="#{kbnData}")
+    private KbnData kbnData;
     @ManagedProperty(value="#{kintaiKey}")
     private KintaiKey kintaiKey;
     @ManagedProperty(value="#{kintaiYearMonth}")
@@ -57,9 +61,10 @@ public class KintaiBean implements Serializable {
     private DakokuMessage dakokuMessage;
     
     // データベースのテーブルコントローラー
-    private AttendanceTableController attendanceTC = null;
-    private KbnTableController kbnTC = null;
-    private WorkPatternTableController workingPatternTC = null;
+//    private AttendanceTableController attendanceTC = null;
+//    private KbnTableController kbnTC = null;
+//    private WorkPatternTableController workingPatternTC = null;
+    private KintaiBeanDataAccess kintaibeanDA = null;
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
@@ -68,6 +73,10 @@ public class KintaiBean implements Serializable {
     private ArrayList<KintaiData> kintaiDataList = null;
     // 選択月度リスト
     private ArrayList<SelectItem> yearMonthList = null;
+    // 今月度有休取得日数
+    private double yukyuDays = 0.0;
+    // 有休残数
+    private double yukyuRemainingDay = 0.0;
     
     
 
@@ -78,11 +87,9 @@ public class KintaiBean implements Serializable {
     kintaiDataListに日付を設定し、データベースに存在する勤怠データを一致する日付のkintaiDataListに設定
     */
     @PostConstruct
-    public void init() {
+    public void init() throws ViewExpiredException {
         
-        attendanceTC = new AttendanceTableController();
-        kbnTC = new KbnTableController();
-        workingPatternTC = new WorkPatternTableController();
+        kintaibeanDA = new KintaiBeanDataAccess();
         
         // 打刻画面メッセージを初期化
         dakokuMessage.setResultMessage("");
@@ -128,7 +135,7 @@ public class KintaiBean implements Serializable {
         for (int i = 1; i <= lastDay; i++) {
             
             // Stringで日付と曜日を設定
-            kintaiDataList.add(new KintaiData(Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), c.get(Calendar.DAY_OF_MONTH)));
+            kintaiDataList.add(new KintaiData(Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), c.get(Calendar.DAY_OF_MONTH)));
             // 日付を1日ずらす
             c.add(Calendar.DAY_OF_MONTH, +1);
         }
@@ -163,18 +170,27 @@ public class KintaiBean implements Serializable {
             connection = DBController.open();
             
             // 勤務パターンを読込
+            Time start = null;
+            Time end = null;
+            kintaibeanDA.getWorkPatternData(connection, userData.getWorkptn_cd(), start, end);
             for (KintaiData kintaiData :kintaiDataList) {
-                workingPatternTC.getTableUseEdit(connection, userData.getWorkptn_cd(), kintaiData);
+                
+                kintaiData.setStart_default(start);
+                kintaiData.setEnd_default(end);
             }
         
             // 勤怠実績を読込
-            attendanceTC.getTableUseKintai(connection, Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), this.userData, kintaiDataList);
+            kintaibeanDA.getAttendanceData(connection, Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), this.userData, kintaiDataList);
             
             // 勤務区分を読込
             for (KintaiData kintaiData :kintaiDataList) {
-                kbnTC.getTableUseKintai(connection, kintaiData.getKbnCd(), kintaiData);
+                
+                kintaiData.setKbnName(kbnData.getKbnList().get(kintaiData.getKbnCd()));
             }
             
+            yukyuDays = kintaibeanDA.getYukyuMonthData(connection, Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), userData, kbnData);
+            yukyuRemainingDay = kintaibeanDA.getYukyuRemainingData(connection, Utility.unionYearMonthDay(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth(),31), userData);
+                    
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new SQLException();
@@ -207,7 +223,7 @@ public class KintaiBean implements Serializable {
 
         // range分リストに追加
         for (int i = 0; i < range; i++) {
-            list.add(new SelectItem(Utility.unionInt(c.get(Calendar.YEAR),c.get(Calendar.MONTH)+1), c.get(Calendar.YEAR)+"年"+(c.get(Calendar.MONTH)+1)+"月"));
+            list.add(new SelectItem(Utility.unionYearMonth(c.get(Calendar.YEAR),c.get(Calendar.MONTH)+1), c.get(Calendar.YEAR)+"年"+(c.get(Calendar.MONTH)+1)+"月"));
             c.add(Calendar.MONTH, +1);
         }
         
@@ -223,6 +239,10 @@ public class KintaiBean implements Serializable {
     public void setUserData(UserData userData) {
         
         this.userData = userData;
+    }
+
+    public void setKbnData(KbnData kbnData) {
+        this.kbnData = kbnData;
     }
 
     public void setKintaiKey(KintaiKey kintaiKey) {
@@ -274,7 +294,7 @@ public class KintaiBean implements Serializable {
     
     public int getYearMonth() {
         
-        return Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
+        return Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
     }
     
     public ArrayList<SelectItem> getYearMonthList() {
@@ -327,7 +347,7 @@ public class KintaiBean implements Serializable {
     */
     public int getViewYearMonth() {
         
-        return Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
+        return Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
     }
     
     /*
@@ -547,13 +567,33 @@ public class KintaiBean implements Serializable {
     }
     
     /*
-    getViewLeaveSum
+    getViewSumLeave
     戻り値：String
     備考
     */
     public String getViewSumLeave() {
         
         return String.valueOf(MathKintai.resultSumLeave(kintaiDataList));
+    }
+    
+    /*
+    getViewSumLeave
+    戻り値：String
+    備考
+    */
+    public double getViewSumYukyu() {
+        
+        return yukyuDays;
+    }
+    
+    /*
+    getViewSumLeave
+    戻り値：String
+    備考
+    */
+    public double getViewRemainingYukyu() {
+        
+        return yukyuRemainingDay;
     }
     /**************************************************************/
     
@@ -578,7 +618,6 @@ public class KintaiBean implements Serializable {
     打刻画面へページ遷移
     */
     public String goDakokuPage() {
-        
         return "dakoku.xhtml?faces-redirect=true";
     }
     
@@ -588,7 +627,6 @@ public class KintaiBean implements Serializable {
     勤怠画面へページ遷移
     */
     public String goKintaiPage() {
-        
         return "kintai.xhtml?faces-redirect=true";
     }
     /***************************************************************/

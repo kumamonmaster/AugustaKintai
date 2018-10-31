@@ -5,52 +5,51 @@
  */
 package database;
 
+import data.KbnData;
 import data.KintaiData;
 import data.UserData;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Time;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.bean.ManagedProperty;
 import util.Log;
 
 /**
  *
  * @author 佐藤孝史
  */
-public class AttendanceTableController {
+public class EditBeanDataAccess {
+    
     
     // ログ生成
     private static final Logger LOG = Log.getLog();
     
-    public void getTableUseKintai(Connection connection, int yearMonth, UserData userData, ArrayList<KintaiData> dataList) throws SQLException {
+    
+    public void getWorkPatternData(Connection connection, int workPtn_cd, KintaiData kintaiData) throws SQLException {
+        
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
             
-            // attendanceテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT * FROM attendance WHERE ym = ? AND user_id = ?");
-            stmt.setInt(1, yearMonth);
-            stmt.setString(2, userData.getId());
+            // userテーブルからデータを取得
+            stmt = connection.prepareStatement("SELECT * FROM work_pattern WHERE ptn_cd = ?");
+            stmt.setInt(1, workPtn_cd);
             rs = stmt.executeQuery();
 
-            // 今まで登録されているデータを取得し設定
-            while (rs.next()) {
+            // パスワード一致していたらページ遷移
+            if( rs.next() ) {
                 
-                dataList.get(rs.getInt("day")-1).setData(
-                                rs.getTime("start_time"), rs.getTime("end_time"), 
-                                rs.getTime("rest_time"), rs.getTime("total_time"), rs.getTime("over_time"), 
-                                rs.getTime("real_time"), rs.getInt("kbn_cd"), "",
-                                rs.getInt("workptn_cd"), rs.getTime("late_time"), rs.getTime("leave_time"),
-                                rs.getString("remarks"));
-                
+                kintaiData.setStart_default(rs.getTime("start_time"));
+                kintaiData.setEnd_default(rs.getTime("end_time"));
             }
+        
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
-            ex.printStackTrace();
             throw new SQLException();
         } finally {
             
@@ -75,8 +74,7 @@ public class AttendanceTableController {
         }
     }
     
-    
-    public void getTableUseEdit(Connection connection, int nowYearMonth, String user_id, int day, KintaiData data) throws SQLException {
+    public void getAttendanceData(Connection connection, int nowYearMonth, String user_id, int day, KintaiData data) throws SQLException {
     
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -128,7 +126,7 @@ public class AttendanceTableController {
         }
     }
     
-    public void setTableUseEditDakoku(Connection connection, KintaiData kintaiData, UserData userData) throws SQLException {
+    public void setAttendanceData(Connection connection, KintaiData kintaiData, UserData userData) throws SQLException {
         
         PreparedStatement stmt = null;
         
@@ -151,7 +149,7 @@ public class AttendanceTableController {
             stmt.setInt(13, kintaiData.getKbnCd());
             stmt.setInt(14, userData.getWorkptn_cd());
             
-            stmt.executeQuery();
+            stmt.executeUpdate();
         
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
@@ -160,6 +158,60 @@ public class AttendanceTableController {
         } finally {
             
             // クローズ
+            
+            try {
+                if (stmt != null)
+                    stmt.close();
+                stmt = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    public void setYukyuData(Connection connection, int ymd, UserData userData, String kbnName) throws SQLException {
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        double addYukyu = 0.0;
+        
+        try {
+            
+            // 一旦デリート
+            stmt = connection.prepareStatement("DELETE FROM yukyu_day WHERE user_id = ? AND ymd = ?");
+            stmt.setString(1, userData.getId());
+            stmt.setInt(2, ymd);
+            stmt.executeUpdate();
+            
+            if (kbnName.equals("有休") || kbnName.equals("午前有休") || kbnName.equals("午後有休")) {
+                
+                double addDay = -0.5;
+                if (kbnName.equals("有休"))
+                    addDay = -1.0;
+                
+                stmt = connection.prepareStatement("INSERT INTO yukyu_day VALUES(?,?,?)");
+                stmt.setString(1, userData.getId());
+                stmt.setInt(2, ymd);
+                stmt.setDouble(3, addDay);
+                stmt.executeUpdate();
+            }
+        
+        } catch (SQLException ex) {
+            LOG.log(Level.SEVERE, "SQL例外です", ex);
+            ex.printStackTrace();
+            throw new SQLException();
+        } finally {
+            
+            // クローズ
+            try {
+                if (rs != null)
+                    rs.close();
+                rs = null;
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
+                ex.printStackTrace();
+            }
             
             try {
                 if (stmt != null)

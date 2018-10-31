@@ -45,7 +45,7 @@
                             <th class="table-active"><label>区分</label></th>
                             <td>
                                 <h:selectOneMenu value="#{editBean.viewKbn}" onchange="submit()">
-                                    <f:selectItems value="#{editInputTable.kbnTable}"/>
+                                    <f:selectItems value="#{editBean.viewKbnTable}"/>
                                 </h:selectOneMenu>
                             </td>
                         </tr>
@@ -53,11 +53,11 @@
                             <th class="table-active">出退勤時間</th>
                             <td>
                                 <h:selectOneMenu value="#{editBean.viewStart}" disabled="#{editBean.disabled}" onchange="submit()">
-                                    <f:selectItems value="#{editInputTable.timeTable}"/>
+                                    <f:selectItems value="#{editBean.viewStartTable}"/>
                                 </h:selectOneMenu>
                                 ～
                                 <h:selectOneMenu value="#{editBean.viewEnd}" disabled="#{editBean.disabled}" onchange="submit()">
-                                    <f:selectItems value="#{editInputTable.timeTable}"/>
+                                    <f:selectItems value="#{editBean.viewEndTable}"/>
                                 </h:selectOneMenu>
                             </td>
                         </tr>
@@ -65,7 +65,7 @@
                             <th class="table-active">休憩時間</th>
                             <td>
                                 <h:selectOneMenu value="#{editBean.viewRest}" disabled="#{editBean.disabled}" onchange="submit()">
-                                    <f:selectItems value="#{editInputTable.restTable}"/>
+                                    <f:selectItems value="#{editBean.viewRestTable}"/>
                                 </h:selectOneMenu>
                             </td>
                         </tr>

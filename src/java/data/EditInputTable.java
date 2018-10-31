@@ -6,18 +6,21 @@
 package data;
 
 import database.DBController;
-import database.KbnTableController;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 import javax.naming.NamingException;
 import util.Log;
@@ -27,10 +30,11 @@ import util.Log;
  * @author 佐藤孝史
  */
 @ManagedBean
-@RequestScoped
-public class EditInputTable {
+@SessionScoped
+public class EditInputTable implements Serializable {
     
-    private KbnTableController ktc = null;
+    @ManagedProperty(value="#{kbnData}")
+    private KbnData kbnData;
     
     private ArrayList<SelectItem> timeTable = null;
     private ArrayList<SelectItem> restTable = null;
@@ -39,9 +43,13 @@ public class EditInputTable {
     // ログ生成
     private static final Logger LOG = Log.getLog();
 
-    public EditInputTable() {
-        
-        ktc = new KbnTableController();
+    
+    public void setKbnData(KbnData kbnData) {
+        this.kbnData = kbnData;
+    }
+
+    @PostConstruct
+    public void init() {
         
         // 出退勤タイムテーブルを初期化
         initTimeTable();
@@ -49,16 +57,8 @@ public class EditInputTable {
         // 休憩時間テーブルを初期化
         initRestTable();
         
-        try {
-            // 区分テーブルを初期化
-            initKbnTable();
-        } catch (SQLException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
-        } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
-        }
+        // 区分テーブルを初期化
+        initKbnTable();
     }
     
     private void initTimeTable() {
@@ -93,92 +93,17 @@ public class EditInputTable {
         }
     }
     
-    private void initKbnTable() throws SQLException, NamingException {
+    private void initKbnTable() {
         
-        Connection connection = null;
         kbnTable = new ArrayList<SelectItem>();
         
-        try {
-            // データベース接続
-            connection = DBController.open();
-            
-            // 区分テーブルからデータを取得しkbnTableにセット
-            ktc.getTableUseEditInput(connection, kbnTable);
-            
-        } catch (SQLException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
-            throw new SQLException();
-        } finally {
-            try {
-                if (connection != null)
-                    connection.close();
-                connection = null;
-            } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
-                ex.printStackTrace();
-            }
-        }
-//        Connection connection = null;
-//        PreparedStatement stmt = null;
-//        ResultSet rs = null;
-//        String kbnName = null;
-//        kbnTable = new ArrayList<SelectItem>();
-//        
-//        try {
-//            
-//            // データベース接続
-//            connection = DBController.open();
-//            
-//            // attendanceテーブルからデータを取得
-//            stmt = connection.prepareStatement("SELECT * FROM kbn");
-//            rs = stmt.executeQuery();
-//
-//            // 今まで登録されているデータを取得し設定
-//            while (rs.next()) {
-//                
-//                kbnTable.add(new SelectItem(rs.getInt("kbn_cd"),rs.getString("name")));
-//            }
-//        
-//        } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, "Naming例外です", ex);
-//            ex.printStackTrace();
-//            throw new NamingException();
-//        } catch (SQLException ex) {
-//            LOG.log(Level.SEVERE, "SQL例外です", ex);
-//            ex.printStackTrace();
-//            throw new SQLException();
-//        } finally {
-//            
-//            // クローズ
-//            try {
-//                if (rs != null)
-//                    rs.close();
-//                rs = null;
-//            } catch (SQLException ex) {
-//                LOG.log(Level.SEVERE, "ResultSetクローズ失敗", ex);
-//                ex.printStackTrace();
-//            }
-//            
-//            try {
-//                if (stmt != null)
-//                    stmt.close();
-//                stmt = null;
-//            } catch (SQLException ex) {
-//                LOG.log(Level.SEVERE, "Statementクローズ失敗", ex);
-//                ex.printStackTrace();
-//            }
-//            
-//            try {
-//                if (connection != null)
-//                    connection.close();
-//                connection = null;
-//            } catch (SQLException ex) {
-//                LOG.log(Level.SEVERE, "Connectionクローズ失敗", ex);
-//                ex.printStackTrace();
-//            }
-//        }
+        int index = 0;
         
+        for (String kbnName: kbnData.getKbnList()) {
+            
+            kbnTable.add(new SelectItem(index, kbnName));
+            index++;
+        }
     }
 
     public ArrayList<SelectItem> getTimeTable() {

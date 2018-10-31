@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>印刷ページ</title>
+    </h:head>
+    <h:body>
+        <h:outputText value="#{kintaiBean.viewYearMonth}"/>
+        <h:dataTable var="item" value="#{kintaiBean.viewKintaiDataList}" styleClass="table table-bordered" style="margin-top: 20px;">
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="日付"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewDay(item.ym,item.day)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="区分"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewKbn(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="出勤時間"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewStart(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="退勤時間"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewEnd(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="総労働時間"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewTotal(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="休憩時間"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewRest(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="残業時間"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewOver(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="実労働時間"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewReal(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="遅刻時間"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewLate(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="早退時間"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewLeave(item)}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="備考"/>
+                </f:facet>
+                <h:outputText value="#{kintaiBean.getViewRemarks(item)}"/>
+            </h:column>
+        </h:dataTable>
+        <h2>勤務時間</h2>
+        <table class="table table-bordered table-sm col-sm-4">
+            <tr>
+                <th class="table-active">総労働時間合計</th>
+                <td>#{kintaiBean.viewSumTotal}</td>
+            </tr>
+            <tr>
+                <th class="table-active">残業時間合計</th>
+                <td>#{kintaiBean.viewSumOver}</td>
+            </tr>
+            <tr>
+                <th class="table-active">実労働時間時間合計</th>
+                <td>#{kintaiBean.viewSumReal}</td>
+            </tr>
+            <tr>
+                <th class="table-active">遅刻時間合計</th>
+                <td>#{kintaiBean.viewSumLate}</td>
+            </tr>
+            <tr>
+                <th class="table-active">早退時間合計</th>
+                <td>#{kintaiBean.viewSumLeave}</td>
+            </tr>
+            <tr>
+                <th class="table-active">有休今月度取得日数</th>
+                <td>#{kintaiBean.viewSumYukyu}</td>
+            </tr>
+            <tr>
+                <th class="table-active">有休残日数</th>
+                <td>#{kintaiBean.viewRemainingYukyu}</td>
+            </tr>
+        </table>
+    </h:body>
+</html>
+

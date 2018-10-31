@@ -5,13 +5,14 @@
  */
 package beans;
 
+import data.KbnData;
 import database.DBController;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import javax.faces.bean.ManagedBean;
 import data.UserData;
-import database.UserTableController;
+import database.LoginBeanDataAccess;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
@@ -28,15 +29,16 @@ public class LoginBean {
 
     @ManagedProperty(value="#{userData}")
     private UserData userData;
+    @ManagedProperty(value="#{kbnData}")
+    private KbnData kbnData;
     
-    private UserTableController userTC = null;
+    private LoginBeanDataAccess loginbeanDA = null;
 
     private static final Logger LOG = Log.getLog();
 
     
     public LoginBean() {
         
-        userTC = new UserTableController();
     }
     
     public void setUserData(UserData userData) {
@@ -44,17 +46,27 @@ public class LoginBean {
         this.userData = userData;
     }
 
+    public void setKbnData(KbnData kbnData) {
+        this.kbnData = kbnData;
+    }
+
     public String login() throws SQLException, NamingException {
         
         Connection connection = null;
         String nextPage = null;
+        loginbeanDA = new LoginBeanDataAccess();
         
         try {
             // データベース接続
             connection = DBController.open();
             
-            if (userTC.selectOnly(connection, this.userData))
+            //if (userTC.selectOnly(connection, this.userData))
+            if (loginbeanDA.getLoginUserData(connection, userData)) {
+                
+                loginbeanDA.getKbnData(connection, kbnData.getKbnList());
+                
                 return "kintai.xhtml?faces-redirect=true";
+            }
             
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);

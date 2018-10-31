@@ -51,6 +51,7 @@
                         </tr>
                     </tbody>
                 </table>
+                <a href="output.xhtml">印刷ページ</a>
             </div>
             <h:form>
                 <h:selectOneMenu value="#{kintaiBean.viewYearMonth}" onchange="submit()" styleClass="form-control col-sm-2">
@@ -147,6 +148,14 @@
                 <tr>
                     <th class="table-active">早退時間合計</th>
                     <td>#{kintaiBean.viewSumLeave}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">有休今月度取得日数</th>
+                    <td>#{kintaiBean.viewSumYukyu}</td>
+                </tr>
+                <tr>
+                    <th class="table-active">有休残日数</th>
+                    <td>#{kintaiBean.viewRemainingYukyu}</td>
                 </tr>
             </table>
         </div>
