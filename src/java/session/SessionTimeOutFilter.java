@@ -103,16 +103,26 @@ public class SessionTimeOutFilter implements Filter {
     
     private boolean isSessionControlRequiredForThisResource(HttpServletRequest httpServletRequest) {
         
+        // 現在のURL取得
         String requestPath = httpServletRequest.getRequestURI();
+        // 現在のURLとタイムアウトページのURLが違っているか
         boolean controlRequired = !requestPath.contains(getTimeoutPage());
         
+        // 違っていいればtrue
         return controlRequired;
     }
     
     private boolean isSessionInvalid(HttpServletRequest httpServletRequest) {
         
-        boolean sessionInValid = (httpServletRequest.getRequestedSessionId() != null )
-        && !httpServletRequest.isRequestedSessionIdValid();
+        boolean sessionInValid = false;
+                
+        // セッションIDが有効か
+        if (httpServletRequest.getRequestedSessionId() != null) {
+            // セッションが有効か
+            if (!httpServletRequest.isRequestedSessionIdValid())
+                // セッションが破棄されたならばtrue
+                sessionInValid = true;
+        }
         
         return sessionInValid;
     }

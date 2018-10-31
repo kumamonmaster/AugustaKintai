@@ -123,7 +123,7 @@ public class DakokuBean {
         Calendar c = new GregorianCalendar();
         
         // 現在の年月日をkintaiDataにセット
-        kintaiData = new KintaiData(Utility.unionInt(c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1), c.get(Calendar.DAY_OF_MONTH) );
+        kintaiData = new KintaiData(Utility.unionYearMonth(c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1), c.get(Calendar.DAY_OF_MONTH) );
         
         try {
             // データベース接続

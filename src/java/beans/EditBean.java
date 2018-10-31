@@ -27,6 +27,7 @@ import javax.faces.model.SelectItem;
 import javax.naming.NamingException;
 import util.Log;
 import util.MathKintai;
+import util.Utility;
 
 
 /**
@@ -185,7 +186,7 @@ public class EditBean {
             kintaiDataDisabled();
             kintaiDataCalculation();
             
-            editBeanDA.setYukyuData(connection, userData, yukyuAddDay);
+            editBeanDA.setYukyuData(connection, Utility.unionYearMonth(kintaiData.getYm(), kintaiData.getDay()), userData, kbnData.getKbnList().get(kintaiData.getKbnCd()));
             
             editBeanDA.setAttendanceData(connection, kintaiData, userData);
             

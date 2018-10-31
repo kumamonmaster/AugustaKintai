@@ -89,9 +89,13 @@ public class MathKintai {
     public static Time resultLate(Time start, Time start_default) {
         
         LocalTime late = null;
-
-        late = start.toLocalTime().minusHours(start_default.toLocalTime().getHour());
-        late = late.minusMinutes(start_default.toLocalTime().getMinute());
+        
+        if (start_default.compareTo(start) > 0) {
+            late = Time.valueOf("00:00:00").toLocalTime();
+        } else {
+            late = start.toLocalTime().minusHours(start_default.toLocalTime().getHour());
+            late = late.minusMinutes(start_default.toLocalTime().getMinute());
+        }
         
         return Time.valueOf(late.toString() + ":00");
     }
@@ -99,9 +103,13 @@ public class MathKintai {
     public static Time resultLeave(Time end, Time end_default) {
         
         LocalTime leave = null;
-
-        leave = end_default.toLocalTime().minusHours(end.toLocalTime().getHour());
-        leave = leave.minusMinutes(end.toLocalTime().getMinute());
+        
+        if (end_default.compareTo(end) < 0) {
+            leave = Time.valueOf("00:00:00").toLocalTime();
+        } else {
+            leave = end_default.toLocalTime().minusHours(end.toLocalTime().getHour());
+            leave = leave.minusMinutes(end.toLocalTime().getMinute()); 
+        }
         
         return Time.valueOf(leave.toString() + ":00");
     }

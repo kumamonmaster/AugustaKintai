@@ -135,7 +135,7 @@ public class KintaiBean implements Serializable {
         for (int i = 1; i <= lastDay; i++) {
             
             // Stringで日付と曜日を設定
-            kintaiDataList.add(new KintaiData(Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), c.get(Calendar.DAY_OF_MONTH)));
+            kintaiDataList.add(new KintaiData(Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), c.get(Calendar.DAY_OF_MONTH)));
             // 日付を1日ずらす
             c.add(Calendar.DAY_OF_MONTH, +1);
         }
@@ -180,7 +180,7 @@ public class KintaiBean implements Serializable {
             }
         
             // 勤怠実績を読込
-            kintaibeanDA.getAttendanceData(connection, Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), this.userData, kintaiDataList);
+            kintaibeanDA.getAttendanceData(connection, Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), this.userData, kintaiDataList);
             
             // 勤務区分を読込
             for (KintaiData kintaiData :kintaiDataList) {
@@ -188,8 +188,8 @@ public class KintaiBean implements Serializable {
                 kintaiData.setKbnName(kbnData.getKbnList().get(kintaiData.getKbnCd()));
             }
             
-            yukyuDays = kintaibeanDA.getYukyuMonthData(connection, Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), userData, kbnData);
-            yukyuRemainingDay = kintaibeanDA.getYukyuRemainingData(connection, userData);
+            yukyuDays = kintaibeanDA.getYukyuMonthData(connection, Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth()), userData, kbnData);
+            yukyuRemainingDay = kintaibeanDA.getYukyuRemainingData(connection, Utility.unionYearMonthDay(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth(),31), userData);
                     
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -223,7 +223,7 @@ public class KintaiBean implements Serializable {
 
         // range分リストに追加
         for (int i = 0; i < range; i++) {
-            list.add(new SelectItem(Utility.unionInt(c.get(Calendar.YEAR),c.get(Calendar.MONTH)+1), c.get(Calendar.YEAR)+"年"+(c.get(Calendar.MONTH)+1)+"月"));
+            list.add(new SelectItem(Utility.unionYearMonth(c.get(Calendar.YEAR),c.get(Calendar.MONTH)+1), c.get(Calendar.YEAR)+"年"+(c.get(Calendar.MONTH)+1)+"月"));
             c.add(Calendar.MONTH, +1);
         }
         
@@ -294,7 +294,7 @@ public class KintaiBean implements Serializable {
     
     public int getYearMonth() {
         
-        return Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
+        return Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
     }
     
     public ArrayList<SelectItem> getYearMonthList() {
@@ -347,7 +347,7 @@ public class KintaiBean implements Serializable {
     */
     public int getViewYearMonth() {
         
-        return Utility.unionInt(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
+        return Utility.unionYearMonth(kintaiYearMonth.getYear(), kintaiYearMonth.getMonth());
     }
     
     /*

@@ -174,22 +174,45 @@ public class KintaiBeanDataAccess {
         }
     }
     
-    public double getYukyuRemainingData(Connection connection, UserData userData) throws SQLException {
+    public double getYukyuRemainingData(Connection connection, int ymd, UserData userData) throws SQLException {
         
         PreparedStatement stmt = null;
         ResultSet rs = null;
         
         try {
             
-            // userテーブルからデータを取得
-            stmt = connection.prepareStatement("SELECT remaining_day FROM yukyu WHERE user_id = ? ");
+            
+            
+            // yukyuテーブルから残日数を取得
+            stmt = connection.prepareStatement("SELECT grant_ymd FROM yukyu WHERE user_id = ?");
             stmt.setString(1, userData.getId());
             rs = stmt.executeQuery();
+            rs.next();
+            
+            stmt = connection.prepareStatement("SELECT Sum(use_day)as total FROM yukyu_day WHERE user_id = ? AND ymd BETWEEN ? AND ?");
+            stmt.setString(1, userData.getId());
+            stmt.setInt(2, rs.getInt("grant_ymd"));
+            stmt.setInt(3, ymd);
+            rs = stmt.executeQuery();
+            rs.next();
+            
+            // yukyuテーブルから残日数を取得
+            Double total = rs.getDouble("total");
+            if (total == null)
+                total = 0.0;
+            
+            stmt = connection.prepareStatement("SELECT (remaining_day + ?)as result FROM yukyu WHERE user_id = ?");
+            stmt.setDouble(1, total);
+            stmt.setString(2, userData.getId());
+//            stmt.setInt(2, ymd);
+//            stmt.setInt(3, rs.getInt("grant_ymd"));
+//            stmt.setString(4, userData.getId());
+            rs = stmt.executeQuery();
 
-            // パスワード一致していたらページ遷移
+            // 有休残日数を取得
             if( rs.next() ) {
                 
-                return rs.getDouble("remaining_day");
+                return rs.getDouble("result");
             } else {
                 return 0.0;
             }

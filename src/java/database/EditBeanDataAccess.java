@@ -170,7 +170,7 @@ public class EditBeanDataAccess {
         }
     }
     
-    public void setYukyuData(Connection connection, UserData userData, double yukyuAddDay) throws SQLException {
+    public void setYukyuData(Connection connection, int ymd, UserData userData, String kbnName) throws SQLException {
         
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -178,12 +178,24 @@ public class EditBeanDataAccess {
         
         try {
             
-            // attendanceテーブルに入力データをセット
-            stmt = connection.prepareStatement("UPDATE yukyu SET remaining_day = remaining_day+? WHERE user_id = ?");
-            stmt.setDouble(1, yukyuAddDay);
-            stmt.setString(2, userData.getId());
-            
+            // 一旦デリート
+            stmt = connection.prepareStatement("DELETE FROM yukyu_day WHERE user_id = ? AND ymd = ?");
+            stmt.setString(1, userData.getId());
+            stmt.setInt(2, ymd);
             stmt.executeUpdate();
+            
+            if (kbnName.equals("有休") || kbnName.equals("午前有休") || kbnName.equals("午後有休")) {
+                
+                double addDay = -0.5;
+                if (kbnName.equals("有休"))
+                    addDay = -1.0;
+                
+                stmt = connection.prepareStatement("INSERT INTO yukyu_day VALUES(?,?,?)");
+                stmt.setString(1, userData.getId());
+                stmt.setInt(2, ymd);
+                stmt.setDouble(3, addDay);
+                stmt.executeUpdate();
+            }
         
         } catch (SQLException ex) {
             LOG.log(Level.SEVERE, "SQL例外です", ex);
