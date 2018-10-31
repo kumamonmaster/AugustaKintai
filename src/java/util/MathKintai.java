@@ -16,11 +16,12 @@ import java.util.ArrayList;
  *
  * @author 佐藤孝史
  * 
- * Math
+ * MathKintai
  * 勤怠データに関わる計算クラス
  */
 public class MathKintai {
     
+    // 総労働時間
     private static Time mathTotal(Time start, Time end, Time rest) {
         
         LocalTime total;
